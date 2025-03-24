@@ -17,7 +17,3 @@ rule next_token = parse
     | ')' { RP }
     | digit+ as n { NUMBER (int_of_string n) }
     | eof { EOF }
-{
-
-}
-

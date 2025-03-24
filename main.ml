@@ -4,20 +4,13 @@ open Lexer
 open Ast 
 open Interp
 
-let rec printTree expr =
-  match expr with
-  | Ecst (Cint x) -> Printf.printf "Ecst %d\n" x
-  | Ebinop (op, e1, e2) ->
-      printTree e1;
-      (match op with
-      | Badd -> Printf.printf " + "
-      | Bsub -> Printf.printf " - "
-      | Bmul -> Printf.printf " * "
-      | Bdiv -> Printf.printf " / "
-      | _ -> Printf.printf " ?");
-      printTree e2;
-      Printf.printf "\n"
-  | _ -> Printf.printf "Unknown expression\n"
+let rec printExpr = function
+| Ecst (Cint n) -> "Cint " ^ string_of_int n
+| Ebinop (op, e1, e2) ->
+    let e1 = printExpr e1 in
+    let e2 = printExpr e2 in
+    "Ebinop {" ^ e1 ^ "} {" ^ e2 ^ "}"
+
 
 let () =
   let c = open_in Sys.argv.(1) in

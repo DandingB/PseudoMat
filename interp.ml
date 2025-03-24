@@ -20,6 +20,13 @@ let rec expr = function
         | Bdiv, Vint n1, Vint n2 -> Vint (n1 / n2)
         | _ -> failwith "Invalid binary operation"
       end
+  | Eunop (Uneg as op, e) ->
+      let v = expr e in
+      begin match v with
+        | Vint n -> Vint (-n)
+        | _ -> failwith "unsupported operand types" 
+      end
+
   | _ -> failwith "Unsupported expression"
 
 let print_value e = 
