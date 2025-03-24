@@ -1,8 +1,0 @@
-(ocamllex
- (modules lexer))
-(menhir
- (modules parser))
-(executable
- (name pseudomath)
- (promote (until-clean))
- (flags ()))
