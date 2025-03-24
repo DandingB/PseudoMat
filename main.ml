@@ -2,6 +2,7 @@ open Lexing
 open Parser
 open Lexer
 open Ast 
+open Interp
 
 let rec printTree expr =
   match expr with
