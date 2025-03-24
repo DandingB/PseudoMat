@@ -3,9 +3,10 @@
 }
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
+let space = ' ' | '\t'
 
-rule token = parse 
-    | [' ' '\t'] { token lexbuf }
+rule next_token = parse 
+    | space+ { next_token lexbuf }
     | '\n' { NEWLINE }
     | '+' { ADD }
     | '-' { SUB }
