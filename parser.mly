@@ -8,6 +8,7 @@
 %token PRINT
 %token LP RP
 %token NEWLINE
+%token SEMICOLON
 
 %start <Ast.stmt> main
 %left ADD SUB (* Precedence *)
@@ -25,6 +26,7 @@ expr:
 
 block:
  | e1 = stmt NEWLINE { e1 }
+ | e1 = stmt SEMICOLON { e1 }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
