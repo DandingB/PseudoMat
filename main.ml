@@ -23,4 +23,4 @@ let () =
   let c = open_in Sys.argv.(1) in
   let lexbuf = Lexing.from_channel c in
   let result = Parser.main Lexer.token lexbuf in
-  printTree result
+  Interp.stmt result

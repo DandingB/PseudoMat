@@ -17,9 +17,17 @@ let rec expr = function
         | Badd, Vint n1, Vint n2 -> Vint (n1 + n2)
         | Bsub, Vint n1, Vint n2 -> Vint (n1 - n2)
         | Bmul, Vint n1, Vint n2 -> Vint (n1 * n2)
+        | Bdiv, Vint n1, Vint n2 -> Vint (n1 / n2)
         | _ -> failwith "Invalid binary operation"
       end
   | _ -> failwith "Unsupported expression"
-    
+
+let print_value e = 
+  match e with
+  | Vint n -> Printf.printf "%d" n
+
+
+let rec stmt = function
+ | Sprint e -> print_value (expr e)
 
 
