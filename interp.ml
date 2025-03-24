@@ -24,11 +24,12 @@ let rec expr = function
 
 let print_value e = 
   match e with
-  | Vint n -> Printf.printf "%d" n
+  | Vint n -> Printf.printf "%d\n" n
 
 
 let rec stmt = function
  | Sprint e -> print_value (expr e)
+ | Sblock stmts -> List.iter stmt stmts
 
 
 let file (dl) =

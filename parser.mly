@@ -24,5 +24,5 @@ expr:
  | e1 = expr SUB e2 = expr { Ebinop (Bsub, e1, e2) }
 
 stmt:
- | s = stmt NEWLINE { s }
+ | e1 = stmt NEWLINE e2 = stmt { Sblock[e1; e2] }
  | PRINT LP e = expr RP { Sprint e }
