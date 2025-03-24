@@ -3,6 +3,6 @@
 (menhir
  (modules parser))
 (executable
- (name pseudomath)
+ (name Main)
  (promote (until-clean))
  (flags ()))
