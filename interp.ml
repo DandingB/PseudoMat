@@ -31,3 +31,7 @@ let rec stmt = function
  | Sprint e -> print_value (expr e)
 
 
+let file (dl) =
+  stmt dl
+
+

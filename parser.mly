@@ -7,6 +7,7 @@
 %token <int> NUMBER
 %token PRINT
 %token LP RP
+%token NEWLINE
 
 %start <Ast.stmt> main
 %left ADD SUB (* Precedence *)
@@ -23,4 +24,5 @@ expr:
  | e1 = expr SUB e2 = expr { Ebinop (Bsub, e1, e2) }
 
 stmt:
+ | s = stmt NEWLINE { s }
  | PRINT LP e = expr RP { Sprint e }
