@@ -13,7 +13,6 @@ rule next_token = parse
     | '*' {MUL}
     | '/' { DIV }
     | "Print" { PRINT }
-    | ';' { SEMICOLON }
     | '(' { LP }
     | ')' { RP }
     | digit+ as n { NUMBER (int_of_string n) }

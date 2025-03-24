@@ -26,7 +26,6 @@ expr:
 
 block:
  | e1 = stmt NEWLINE { e1 }
- | e1 = stmt SEMICOLON { e1 }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
