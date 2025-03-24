@@ -1,5 +1,3 @@
-
-
 {
     open Parser
 
@@ -13,7 +11,7 @@ rule token = parse
     | '-' { SUB }
     | '*' {MUL}
     | '/' { DIV }
-    | digit+ as n { NUMBER (int_of_string n) }¨
+    | digit+ as n { NUMBER (int_of_string n) }
     | eof { EOF }
 {
 

@@ -3,7 +3,7 @@ open Parser
 open Lexer
 
 let () = 
-    let C = open_in sys.argv.(1) in 
-    let lexbuf = Lexing.from_channel C in
+    let c = open_in Sys.argv.(1) in 
+    let lexbuf = Lexing.from_channel c in
     let result = Parser.main Lexer.token lexbuf in
-    Printf.printf "%d", result
+    Printf.printf "%d" result
