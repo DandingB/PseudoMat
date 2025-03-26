@@ -50,11 +50,32 @@ let print_value e =
   | Vbool n -> Printf.printf "%B\n" n
   | Vstring n -> Printf.printf "%s\n" n
 
+  (* let is_false = function
+  | Vnone
+  | Vbool false
+  | Vstring "" 
+  | Vlist [||] -> true
+  | Vnum n -> n = 0
+  | _ -> false 
+
+let is_true v = not (is_false v)  *)
+
+
 let rec stmt = function
  | Sprint e -> print_value (expr e)
  | Sblock stmts -> List.iter stmt stmts
+ | Sif (e, stmts) -> 
+    begin match (expr e) with
+      | Vbool e -> if e then stmt stmts 
+      | _ -> failwith "Not boolean"
+    end
+
 
 let file (dl) =
   stmt dl
 
+
+(*  | Sif (e, s1, s2) ->
+    if is_true (expr ctx e) then stmt ctx s1 else stmt ctx s2 (* DONE (question 2) *)
+  | Sassign ({id}, e1) -> *)
 

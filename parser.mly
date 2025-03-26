@@ -7,8 +7,9 @@
 %token <float> NUMBER
 %token <string> STRING
 %token TRUE FALSE 
+%token IF
 %token PRINT
-%token LP RP
+%token LP RP LC RC
 %token NEWLINE
 %token SEMICOLON
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
@@ -26,6 +27,7 @@ block:
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
+ | IF LP e = expr RP LC NEWLINE? b = block NEWLINE? RC  { Sif (e, b) }
 
 expr:
  | i = NUMBER { Ecst (Cnum i) }
