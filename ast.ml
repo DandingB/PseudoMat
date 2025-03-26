@@ -16,9 +16,8 @@
    type constant =
      | Cnone
      | Cbool of bool
-     | Cstring of string
-     | Cint of int
-     | Cfloat of float
+     | Cstring of string 
+     | Cnum of float
    
      (* Expressions combination of constants or other expressions *)
    type expr =
