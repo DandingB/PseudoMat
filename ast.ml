@@ -32,6 +32,7 @@
    
    and stmt =
      | Sif of expr * stmt * stmt (* if e1 then s1 else s2 *)
+     | Selseif of expr * stmt * stmt (* elseif e1 then s1 else s2 *)
      | Sreturn of expr
      | Sassign of ident * expr
      | Sprint of expr

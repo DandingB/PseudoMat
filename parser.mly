@@ -7,12 +7,15 @@
 %token <float> NUMBER
 %token <string> STRING
 %token TRUE FALSE 
-%token IF ELSE
+%token IF ELSEIF ELSE
 %token PRINT
 %token LP RP LC RC
 %token NEWLINE
 %token SEMICOLON
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
+%token NUMBER_TYPE STRING_TYPE BOOLEAN_TYPE
+%token LET AS BE
+%token <string> ID
 %start <Ast.stmt> main
 %left ADD SUB (* Precedence *)
 %left MUL DIV
@@ -24,12 +27,28 @@ main:
 
 block:
  | NEWLINE? e1 = stmt NEWLINE? { e1 }
- | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC { Sblock e }
+ | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC NEWLINE? { Sblock e }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
+//  If statement without else
  | IF LP e = expr RP b = block { Sif (e, b, Sblock []) }
+//  If statement with else
  | IF LP e = expr RP b1 = block ELSE b2 = block { Sif (e, b1, b2) }
+//  If statement with elseif. We check if there has been an if before the else if.
+ | IF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1, Sblock []) }
+//  If, elseif and else match.
+ | IF LP expr RP block ELSEIF LP e = expr RP b1 = block ELSE b2 = block { Selseif (e, b1, b2) }
+//  Else if statement. We check if there has been an else if before the else if.
+ | ELSEIF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1, Sblock []) }
+//  Else after elseif. We check if there has been an else if before the else.
+ | ELSEIF LP e = expr RP b1 = block ELSE b2 = block { Selseif (e, b1, b2) }
+
+//  First expression is the ID expression returning Eident. Second is the value of the ID expression.
+// This will match: Let id as type be value
+ | NEWLINE? LET e1 = ident BE e2 = expr NEWLINE? { Sassign (e1, e2) } 
+//  This will match: Let id as type. 
+//  | NEWLINE? LET e1 = ident AS data_type NEWLINE? { Sassign (e1, Cnone) } 
  | e = expr
     { Seval e }
 
@@ -38,6 +57,7 @@ expr:
  | s = STRING { Ecst (Cstring s) }
  | TRUE { Ecst (Cbool true)}
  | FALSE { Ecst (Cbool false) }
+ | id = ident { Eident id }
  | e1 = expr ADD e2 = expr { Ebinop (Badd, e1, e2) }
  | e1 = expr MUL e2 = expr { Ebinop (Bmul, e1, e2) }
  | e1 = expr DIV e2 = expr { Ebinop (Bdiv, e1, e2) }
@@ -55,3 +75,6 @@ expr:
 
 
 
+ident:
+  id = ID { { loc = ($startpos, $endpos); id } }
+;
