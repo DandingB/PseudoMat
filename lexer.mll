@@ -7,6 +7,7 @@
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 let space = ' ' | '\t' | '\n'
+let data_type = "number" | "string" | "boolean"
 
 rule next_token = parse 
     | space+ { next_token lexbuf }
@@ -40,10 +41,9 @@ rule next_token = parse
     | "Let" { LET }
     | "as" { AS }
     | "be" { BE }
-    (* Data types *)
-    | "number" { NUMBER_TYPE }
-    | "string" { STRING_TYPE }
-    | "boolean" { BOOLEAN_TYPE }
+    (* Data types.  *)
+    (* TODO: NOT IMPLEMENTED YET *)
+    | data_type { DATATYPE }
     | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
