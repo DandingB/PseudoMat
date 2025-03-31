@@ -26,7 +26,7 @@ let print_value e =
     else Printf.printf "%d\n" (int_of_float n)
   | Vbool n -> Printf.printf "%B\n" n
   | Vstring n -> Printf.printf "%s\n" n
-  | _ -> failwith "Unsupported statement"
+  | _ -> failwith "Unsupported print"
 
   (* let is_false = function
   | Vnone
@@ -66,7 +66,7 @@ let rec expr ctx = function
     let v1 = expr ctx e in
     begin match op, v1 with
     | Uneg, Vnum n2 -> Vnum( -.n2 )
-    | _ -> failwith "Unsupported statement"
+    | _ -> failwith "Unsupported Expression"
     end
     (* When we have an identity we find it in the hastable and return it. *)
   | Eident {id} -> Hashtbl.find ctx id
@@ -90,6 +90,38 @@ and stmt ctx = function
     end
   | Sassign ({id}, e1) ->
     Hashtbl.replace ctx id (expr ctx e1)
+  | Sfor ({id}, e1, e2, s, bl) ->
+    let v1 = expr ctx e1 in
+    begin match v1 with
+    | Vnum v1 ->
+        (* Initialize variable in context *)
+        Hashtbl.replace ctx id (Vnum v1);
+        while
+          (* Evaluate the condition *)
+          match expr ctx e2 with
+          | Vbool cond -> cond
+          | _ -> failwith "For-loop condition must evaluate to a boolean"
+        do
+          (* Execute the block *)
+          stmt ctx bl;
+          (* Evaluate the stamtent in the end of for *)
+          stmt ctx s
+        done
+    | _ -> failwith "For-loop start value must be a number"
+    end
+  | Srange (e1, e2, bl) ->
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    begin match v1, v2 with
+    | Vnum v1, Vnum v2 ->
+      for _ = int_of_float v1 to int_of_float v2 do
+        (* Execute the block *)
+        stmt ctx bl
+      done
+    | _ -> failwith "For-loop start and end values must be numbers"
+    end
+
+    (* Last case fail *)
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
@@ -98,9 +130,4 @@ and block ctx = function
 
 let file (dl) =
   stmt (Hashtbl.create 17) dl
-
-
-(*  | Sif (e, s1, s2) ->
-    if is_true (expr ctx e) then stmt ctx s1 else stmt ctx s2 (* DONE (question 2) *)
-  | Sassign ({id}, e1) -> *)
 

@@ -35,12 +35,18 @@ rule next_token = parse
     | "If" { IF }
     | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
+    | ';' { SEMICOLON }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
+
     (* Variable decleration *)
     | "Let" { LET }
     | "as" { AS }
     | "be" { BE }
+
+    (* Loops *)
+    | "For" {FOR}
+    | "to" {TO}
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
     | data_type { DATATYPE }
