@@ -6,7 +6,7 @@ open Interp
 
 let rec printTree expr =
   match expr with
-  | Ecst (Cint x) -> Printf.printf "Ecst %d\n" x
+  | Ecst (Cnum x) -> Printf.printf "Ecst %f\n" x
   | Ebinop (op, e1, e2) ->
       printTree e1;
       (match op with
