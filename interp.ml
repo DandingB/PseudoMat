@@ -1,8 +1,6 @@
 open Ast
 open Format
 
-
-
 type value =
   | Vnone
   | Vbool of bool
@@ -15,8 +13,34 @@ type value =
   following OCaml functions as parameter `ctx`. *)
 
 type ctx = (string, value) Hashtbl.t
+
+let has_decimal_part x =
+  x <> floor x  
+
+let print_value e = 
+  match e with
+  | Vnone -> Printf.printf "None\n"
+  | Vnum n ->
+    if has_decimal_part n 
+    then Printf.printf "%f\n" n
+    else Printf.printf "%d\n" (int_of_float n)
+  | Vbool n -> Printf.printf "%B\n" n
+  | Vstring n -> Printf.printf "%s\n" n
+  | _ -> failwith "Unsupported statement"
+
+  (* let is_false = function
+  | Vnone
+  | Vbool false
+  | Vstring "" 
+  | Vlist [||] -> true
+  | Vnum n -> n = 0
+  | _ -> false 
+
+let is_true v = not (is_false v)  *)
+
   
 let rec expr ctx = function 
+  | Ecst (Cnone) -> Vnone
   | Ecst (Cnum n) -> Vnum n
   | Ecst (Cbool n) -> Vbool n
   | Ecst (Cstring n) -> Vstring n
@@ -48,33 +72,8 @@ let rec expr ctx = function
   | Eident {id} -> Hashtbl.find ctx id
   | _ -> failwith "Unsupported expression"
 
-
-let has_decimal_part x =
-  x <> floor x  
-
-let print_value e = 
-  match e with
-  | Vnum n ->
-    if has_decimal_part n 
-    then Printf.printf "%f\n" n
-    else Printf.printf "%d\n" (int_of_float n)
-  | Vbool n -> Printf.printf "%B\n" n
-  | Vstring n -> Printf.printf "%s\n" n
-  | _ -> failwith "Unsupported statement"
-
-  (* let is_false = function
-  | Vnone
-  | Vbool false
-  | Vstring "" 
-  | Vlist [||] -> true
-  | Vnum n -> n = 0
-  | _ -> false 
-
-let is_true v = not (is_false v)  *)
-
-
 (* stmts is all the statements in the block. *)
-let rec stmt ctx = function
+and stmt ctx = function
  | Sprint e -> print_value (expr ctx e)
  | Sblock stmts -> block ctx stmts
  | Sif (e, bl1, bl2) -> 
