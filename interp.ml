@@ -94,17 +94,17 @@ and stmt ctx = function
     let v1 = expr ctx e1 in
     begin match v1 with
     | Vnum v1 ->
-        (* Initialiser variablen i konteksten *)
+        (* Initialize variable in context *)
         Hashtbl.replace ctx id (Vnum v1);
         while
-          (* Evaluer betingelsen *)
+          (* Evaluate the condition *)
           match expr ctx e2 with
           | Vbool cond -> cond
           | _ -> failwith "For-loop condition must evaluate to a boolean"
         do
-          (* Udfør blokken *)
+          (* Execute the block *)
           stmt ctx bl;
-          (* Evaluer opdateringen *)
+          (* Evaluate the stamtent in the end of for *)
           stmt ctx s
         done
     | _ -> failwith "For-loop start value must be a number"
