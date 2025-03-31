@@ -110,14 +110,18 @@ and stmt ctx = function
     | _ -> failwith "For-loop start value must be a number"
     end
   | Srange (e1, e2, bl) ->
-    (* let v1 = expr ctx e1 in
+    let v1 = expr ctx e1 in
     let v2 = expr ctx e2 in
-    match v1, v2 with
+    begin match v1, v2 with
     | Vnum v1, Vnum v2 ->
-      for int_of_float v1 to int_of_float v2 do
+      for _ = int_of_float v1 to int_of_float v2 do
+        (* Execute the block *)
         stmt ctx bl
       done
-    end *)
+    | _ -> failwith "For-loop start and end values must be numbers"
+    end
+
+    (* Last case fail *)
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
