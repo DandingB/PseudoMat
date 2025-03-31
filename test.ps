@@ -33,5 +33,18 @@ Print(y)
 x = True
 
 If (x){
+    If(False){
+        Print("FUCK")
+    } Else {
+        Print("FUCK ELSE")
+        If(True){
+            Print("FUCK NESTED IF IN ELSE")
+            If(True){
+                Print("FUCK NESTED IF IN ELSE IF")
+            }
+        } Else {
+            Print("Should not be printed")
+        }
+    }
     Print(x)
 }
