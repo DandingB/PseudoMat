@@ -81,12 +81,14 @@ let rec stmt ctx = function
       | Vbool e1 -> if e1 then stmt ctx bl1 else stmt ctx bl2 
       | _ -> failwith "Not boolean"
     end
-  | Selseif (e, bl) ->
+  | Selseif (e, bl1, bl2) ->
     let e1 = expr ctx e in
     begin match e1 with
-      | Vbool e1 -> if e1 then stmt ctx bl 
+      | Vbool e1 -> if e1 then stmt ctx bl1  else stmt ctx bl2
       | _ -> failwith "Not boolean"
     end
+  | Sassign ({id}, e1) ->
+    Hashtbl.replace ctx id (expr ctx e1)
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()

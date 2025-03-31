@@ -35,6 +35,15 @@ rule next_token = parse
     | "Else" { ELSE }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
+    (* Variable decleration *)
+    | "Let" { LET }
+    | "as" { AS }
+    | "be" { BE }
+    (* Data types *)
+    | "number" { NUMBER_TYPE }
+    | "string" { STRING_TYPE }
+    | "boolean" { BOOLEAN_TYPE }
+    | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
 
