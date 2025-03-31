@@ -23,6 +23,7 @@ rule next_token = parse
     | "<=" { LESSEQUALS }
     | ">=" { GREATEREQUALS }
     | "==" { EQUALS }
+    | '=' { ASSIGN }
     | "!=" { NOTEQUALS }
     | '{' { LC }
     | '}' { RC }

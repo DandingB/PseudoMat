@@ -44,6 +44,8 @@ let rec expr ctx = function
     | Uneg, Vnum n2 -> Vnum( -.n2 )
     | _ -> failwith "Unsupported statement"
     end
+    (* When we have an identity we find it in the hastable and return it. *)
+  | Eident {id} -> Hashtbl.find ctx id
   | _ -> failwith "Unsupported expression"
 
 

@@ -14,7 +14,7 @@
 %token SEMICOLON
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
 %token NUMBER_TYPE STRING_TYPE BOOLEAN_TYPE
-%token LET AS BE
+%token LET AS BE ASSIGN
 %token <string> ID
 %start <Ast.stmt> main
 %left ADD SUB (* Precedence *)
@@ -47,7 +47,9 @@ stmt:
 //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
 // This will match: Let id as type be value
  | NEWLINE? LET e1 = ident BE e2 = expr NEWLINE? { Sassign (e1, e2) } 
-//  This will match: Let id as type. 
+//  Assign new value to variabble. This will match: id = value
+ | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
+// TODO: This will match: Let id as type.  
 //  | NEWLINE? LET e1 = ident AS data_type NEWLINE? { Sassign (e1, Cnone) } 
  | e = expr
     { Seval e }
