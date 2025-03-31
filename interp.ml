@@ -26,7 +26,7 @@ let print_value e =
     else Printf.printf "%d\n" (int_of_float n)
   | Vbool n -> Printf.printf "%B\n" n
   | Vstring n -> Printf.printf "%s\n" n
-  | _ -> failwith "Unsupported statement"
+  | _ -> failwith "Unsupported print"
 
   (* let is_false = function
   | Vnone
@@ -66,7 +66,7 @@ let rec expr ctx = function
     let v1 = expr ctx e in
     begin match op, v1 with
     | Uneg, Vnum n2 -> Vnum( -.n2 )
-    | _ -> failwith "Unsupported statement"
+    | _ -> failwith "Unsupported Expression"
     end
     (* When we have an identity we find it in the hastable and return it. *)
   | Eident {id} -> Hashtbl.find ctx id
@@ -90,6 +90,30 @@ and stmt ctx = function
     end
   | Sassign ({id}, e1) ->
     Hashtbl.replace ctx id (expr ctx e1)
+  | Sfor ({id}, e1, e2, s, bl) ->
+    let v1 = expr ctx e1 in
+    begin match v1 with
+    | Vnum v1 -> 
+      let v2 = ref (expr ctx e2) in
+      begin match !v2 with
+      | Vbool v2 ->
+        while !v2 do
+          stmt ctx bl;
+        
+
+      (* | Vnum n1, Vnum n2 -> *)
+        (* for i = int_of_float n1 to int_of_float n2 do
+          Hashtbl.replace ctx id (Vnum (float_of_int i));
+          stmt ctx s;
+          stmt ctx bl
+        done *)
+      | _ -> failwith "Not number"
+    end
+
+
+    
+
+    
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()

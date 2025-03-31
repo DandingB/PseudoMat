@@ -9,6 +9,7 @@
 %token <string> STRING
 %token TRUE FALSE 
 %token IF ELSEIF ELSE
+%token FOR
 %token PRINT
 %token LP RP LC RC
 %token NEWLINE
@@ -50,6 +51,7 @@ stmt:
  | NEWLINE? LET e1 = ident AS DATATYPE NEWLINE? { Sassign (e1, Ecst(Cnone) ) } 
 //  Assign new value to variabble. This will match: id = value
  | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
+ | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
  | e = expr
     { Seval e }
 

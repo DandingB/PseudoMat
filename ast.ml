@@ -37,7 +37,7 @@
      | Sassign of ident * expr
      | Sprint of expr
      | Sblock of stmt list
-     | Sfor of ident * expr * stmt
+     | Sfor of ident * expr * expr * stmt * stmt (* for(ident = e1; expr; stmt) {block}  *) (* For(i = 1; i<10; i++) {block}*)
      | Seval of expr
      | Sset of expr * expr * expr (* e1[e2] = e3 *)
    

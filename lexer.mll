@@ -37,10 +37,14 @@ rule next_token = parse
     | "Else" { ELSE }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
+
     (* Variable decleration *)
     | "Let" { LET }
     | "as" { AS }
     | "be" { BE }
+
+    (* Loops *)
+    | "For" {FOR}
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
     | data_type { DATATYPE }
