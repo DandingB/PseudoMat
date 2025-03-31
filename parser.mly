@@ -24,6 +24,7 @@ main:
 
 block:
  | e1 = stmt NEWLINE { e1 }
+ | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC { Sblock e }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
