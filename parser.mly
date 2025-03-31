@@ -7,7 +7,7 @@
 %token <float> NUMBER
 %token <string> STRING
 %token TRUE FALSE 
-%token IF
+%token IF ELSE
 %token PRINT
 %token LP RP LC RC
 %token NEWLINE
@@ -23,12 +23,15 @@ main:
  | NEWLINE? e = nonempty_list(block) NEWLINE? EOF { Sblock e }
 
 block:
- | e1 = stmt NEWLINE { e1 }
+ | NEWLINE? e1 = stmt NEWLINE? { e1 }
  | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC { Sblock e }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
- | IF LP e = expr RP LC NEWLINE? b = block NEWLINE? RC  { Sif (e, b) }
+ | IF LP e = expr RP b = block { Sif (e, b, Sblock []) }
+ | IF LP e = expr RP b1 = block ELSE b2 = block { Sif (e, b1, b2) }
+ | e = expr
+    { Seval e }
 
 expr:
  | i = NUMBER { Ecst (Cnum i) }

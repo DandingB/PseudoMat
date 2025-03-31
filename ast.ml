@@ -31,7 +31,7 @@
      | Ematrix of expr list list (* [[e1,e2,...],[e3,e4,...],...] *)
    
    and stmt =
-     | Sif of expr * stmt
+     | Sif of expr * stmt * stmt (* if e1 then s1 else s2 *)
      | Sreturn of expr
      | Sassign of ident * expr
      | Sprint of expr

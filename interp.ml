@@ -75,10 +75,10 @@ let is_true v = not (is_false v)  *)
 let rec stmt ctx = function
  | Sprint e -> print_value (expr ctx e)
  | Sblock stmts -> block ctx stmts
- | Sif (e, stmts) -> 
+ | Sif (e, bl1, bl2) -> 
     let e1 = expr ctx e in
     begin match e1 with
-      | Vbool e1 -> if e1 then stmt ctx stmts 
+      | Vbool e1 -> if e1 then stmt ctx bl1 else stmt ctx bl2 
       | _ -> failwith "Not boolean"
     end
   | _ -> failwith "Unsupported statement"

@@ -31,6 +31,7 @@ rule next_token = parse
     | "True" { TRUE }
     | "False" { FALSE }
     | "If" { IF }
+    | "Else" { ELSE }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
     | '"' { STRING(string lexbuf) }
