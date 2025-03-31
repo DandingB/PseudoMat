@@ -9,7 +9,7 @@
 %token <string> STRING
 %token TRUE FALSE 
 %token IF ELSEIF ELSE
-%token FOR
+%token FOR TO
 %token PRINT
 %token LP RP LC RC
 %token NEWLINE
@@ -52,6 +52,7 @@ stmt:
 //  Assign new value to variabble. This will match: id = value
  | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
+ | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
  | e = expr
     { Seval e }
 

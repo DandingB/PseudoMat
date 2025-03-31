@@ -46,6 +46,7 @@ rule next_token = parse
 
     (* Loops *)
     | "For" {FOR}
+    | "to" {TO}
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
     | data_type { DATATYPE }
