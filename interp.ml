@@ -93,27 +93,22 @@ and stmt ctx = function
   | Sfor ({id}, e1, e2, s, bl) ->
     let v1 = expr ctx e1 in
     begin match v1 with
-    | Vnum v1 -> 
-      let v2 = ref (expr ctx e2) in
-      begin match !v2 with
-      | Vbool v2 ->
-        while !v2 do
+    | Vnum v1 ->
+        (* Initialiser variablen i konteksten *)
+        Hashtbl.replace ctx id (Vnum v1);
+        while
+          (* Evaluer betingelsen *)
+          match expr ctx e2 with
+          | Vbool cond -> cond
+          | _ -> failwith "For-loop condition must evaluate to a boolean"
+        do
+          (* Udfør blokken *)
           stmt ctx bl;
-        
-
-      (* | Vnum n1, Vnum n2 -> *)
-        (* for i = int_of_float n1 to int_of_float n2 do
-          Hashtbl.replace ctx id (Vnum (float_of_int i));
-          stmt ctx s;
-          stmt ctx bl
-        done *)
-      | _ -> failwith "Not number"
+          (* Evaluer opdateringen *)
+          stmt ctx s
+        done
+    | _ -> failwith "For-loop start value must be a number"
     end
-
-
-    
-
-    
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
@@ -122,9 +117,4 @@ and block ctx = function
 
 let file (dl) =
   stmt (Hashtbl.create 17) dl
-
-
-(*  | Sif (e, s1, s2) ->
-    if is_true (expr ctx e) then stmt ctx s1 else stmt ctx s2 (* DONE (question 2) *)
-  | Sassign ({id}, e1) -> *)
 
