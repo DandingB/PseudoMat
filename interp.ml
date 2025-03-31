@@ -81,6 +81,12 @@ let rec stmt ctx = function
       | Vbool e1 -> if e1 then stmt ctx bl1 else stmt ctx bl2 
       | _ -> failwith "Not boolean"
     end
+  | Selseif (e, bl) ->
+    let e1 = expr ctx e in
+    begin match e1 with
+      | Vbool e1 -> if e1 then stmt ctx bl 
+      | _ -> failwith "Not boolean"
+    end
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()

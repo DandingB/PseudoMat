@@ -7,7 +7,7 @@
 %token <float> NUMBER
 %token <string> STRING
 %token TRUE FALSE 
-%token IF ELSE
+%token IF ELSEIF ELSE
 %token PRINT
 %token LP RP LC RC
 %token NEWLINE
@@ -24,12 +24,20 @@ main:
 
 block:
  | NEWLINE? e1 = stmt NEWLINE? { e1 }
- | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC { Sblock e }
+ | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC NEWLINE? { Sblock e }
 
 stmt:
  | PRINT LP e = expr RP { Sprint e }
+//  If statement without else
  | IF LP e = expr RP b = block { Sif (e, b, Sblock []) }
+//  If statement with else
  | IF LP e = expr RP b1 = block ELSE b2 = block { Sif (e, b1, b2) }
+//  If statement with elseif. We check if there has been an if before the else if.
+ | IF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1) }
+//  Else if statement. We check if there has been an else if before the else if.
+ | ELSEIF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1) }
+//  Else after elseif. We check if there has been an else if before the else.
+ | ELSEIF LP e = expr RP b1 = block ELSE b2 = block { Sif (e, b1, b2) }
  | e = expr
     { Seval e }
 

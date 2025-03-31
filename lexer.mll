@@ -6,7 +6,7 @@
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let space = ' ' | '\t'
+let space = ' ' | '\t' | '\n'
 
 rule next_token = parse 
     | space+ { next_token lexbuf }
@@ -31,6 +31,7 @@ rule next_token = parse
     | "True" { TRUE }
     | "False" { FALSE }
     | "If" { IF }
+    | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
