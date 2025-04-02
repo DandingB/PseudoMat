@@ -45,6 +45,29 @@ let rec print_value e =
 
 let is_true v = not (is_false v)  *)
 
+let rec to_string e =
+  match e with
+  | Vnone -> Vstring "None"
+  | Vnum n ->
+    if has_decimal_part n 
+    then Vstring(Printf.sprintf "%f" n)
+    else Vstring(Printf.sprintf "%d" (int_of_float n))
+  | Vbool n -> Vstring(Printf.sprintf "%B" n)
+  | Vstring n -> Vstring(Printf.sprintf "%s" n)
+  | Varray arr ->
+    let arrLen = Array.length arr in
+    if arrLen == 0 then Vstring "[]"
+    else 
+      let elements = Array.mapi (fun i v ->
+        let str = match to_string v with
+          | Vstring s -> s
+          | _ -> failwith "Expected string in to_string"
+        in
+        if i == arrLen - 1 then str else str ^ ", "
+      ) arr in
+      Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+  | _ -> failwith "Unsupported print"
+
   
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
@@ -74,6 +97,9 @@ let rec expr ctx = function
       let v2 = expr ctx e2 in
       begin match op, v1, v2 with
         | Badd, Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
+        | Badd, Vstring n1, Vstring n2  -> Vstring (n1 ^ n2)
+        | Badd, Varray n1, Varray n2 -> Varray (Array.append n1 n2)
+        | Badd, _, _ -> Vstring(to_string v1 ^ to_string v2)
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
