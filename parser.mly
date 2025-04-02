@@ -4,6 +4,7 @@
 
 // TODO: Make comments about tokens.
 %token ADD MUL DIV SUB
+%token NOT
 %token EOF
 %token <float> NUMBER
 %token <string> STRING
@@ -11,16 +12,19 @@
 %token IF ELSEIF ELSE
 %token FOR TO WHILE
 %token PRINT
-%token LP RP LC RC
+%token LP RP LC RC LSQ RSQ
 %token NEWLINE
-%token SEMICOLON
+%token SEMICOLON COMMA 
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
 %token LET AS BE ASSIGN DATATYPE
 %token <string> ID
 %start <Ast.stmt> main
-%left ADD SUB (* Precedence *)
+(* Precedence *)
+%left AND OR 
+%left LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS
+%left ADD SUB 
 %left MUL DIV
-%nonassoc USUB
+%nonassoc USUB UNOT
 %%
 
 main:
@@ -56,7 +60,6 @@ stmt:
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
   //  WHILE LOOPS
  | WHILE LP e = expr RP b = block {Swhile(e, b) } (* for(e1 to e2) {b} *)
-
  | e = expr
     { Seval e }
 
@@ -80,8 +83,8 @@ expr:
  | e1 = expr OR e2 = expr { Ebinop(Bor, e1, e2) }
  | LP e = expr RP { e }
  | SUB e = expr %prec USUB { Eunop(Uneg, e) }
-
-
+ | NOT e = expr %prec UNOT { Eunop(Unot, e) }
+ | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
 
 ident:
   id = ID { { loc = ($startpos, $endpos); id } }

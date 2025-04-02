@@ -2,12 +2,15 @@
     open Parser
 
     let string_buffer = Buffer.create 1024
+
+    (* Lexical analysis error *)
+    exception Lexing_error of string
 }
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 let space = ' ' | '\t' | '\n'
-let data_type = "number" | "string" | "boolean"
+let data_type = "number" | "string" | "boolean" | "array"
 
 rule next_token = parse 
     | space+ { next_token lexbuf }
@@ -28,6 +31,10 @@ rule next_token = parse
     | "!=" { NOTEQUALS }
     | '{' { LC }
     | '}' { RC }
+    | '[' { LSQ }
+    | ']' { RSQ }
+    | ',' { COMMA }
+    | "Not" { NOT }
     | "And" { AND }
     | "Or" { OR }
     | "True" { TRUE }
@@ -36,6 +43,10 @@ rule next_token = parse
     | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
     | ';' { SEMICOLON }
+
+    (* Comments *)
+    | '#' [^'\n']* { next_token lexbuf }
+    | "(*" { comment lexbuf }
     | digit+ as n { NUMBER (float_of_string n) }
     | digit+'.'digit+ as n { NUMBER (float_of_string n) }
 
@@ -54,6 +65,7 @@ rule next_token = parse
     | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
+    | _ as c { raise (Lexing_error ("Unexpected character: " ^ String.make 1 c)) }
 
 and string = parse 
     | '"' { let s = Buffer.contents string_buffer in 
@@ -61,6 +73,12 @@ and string = parse
             s }
     | "\\\"" { Buffer.add_char string_buffer '"' ;
                string lexbuf }
+    | "\\n" { Buffer.add_char string_buffer '\n' ;
+               string lexbuf }
     | _ as c { Buffer.add_char string_buffer c ; 
                string lexbuf }
+and comment = parse
+    | "*)" { next_token lexbuf }
+    | _ { comment lexbuf }
+    | eof { raise (Lexing_error "Unterminated comment") }
     

@@ -6,7 +6,7 @@ type value =
   | Vbool of bool
   | Vnum of float
   | Vstring of string
-  | Vlist of value array
+  | Varray of value array
 
 (* Local variables (function parameters and local variables introduced
   by assignments) are stored in a hash table that is passed to the
@@ -17,16 +17,23 @@ type ctx = (string, value) Hashtbl.t
 let has_decimal_part x =
   x <> floor x  
 
-let print_value e = 
+let rec print_value e = 
   match e with
-  | Vnone -> Printf.printf "None\n"
+  | Vnone -> Printf.printf "None"
   | Vnum n ->
     if has_decimal_part n 
-    then Printf.printf "%f\n" n
-    else Printf.printf "%d\n" (int_of_float n)
-  | Vbool n -> Printf.printf "%B\n" n
-  | Vstring n -> Printf.printf "%s\n" n
+    then Printf.printf "%f" n
+    else Printf.printf "%d" (int_of_float n)
+  | Vbool n -> Printf.printf "%B" n
+  | Vstring n -> Printf.printf "%s" n
+  | Varray arr ->
+    let arrLen = Array.length arr in
+    if arrLen == 0 then Printf.printf "[]" else 
+    Printf.printf "[";
+    Array.iteri (fun i v -> print_value v; if i == arrLen - 1 then Printf.printf "" else Printf.printf ", ") arr;
+    Printf.printf "]"
   | _ -> failwith "Unsupported print"
+
 
   (* let is_false = function
   | Vnone
@@ -44,6 +51,9 @@ let rec expr ctx = function
   | Ecst (Cnum n) -> Vnum n
   | Ecst (Cbool n) -> Vbool n
   | Ecst (Cstring n) -> Vstring n
+  | Earray l -> 
+    let arr = Array.of_list (List.map (expr ctx) l) in
+    Varray arr
   | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor  as op, e1, e2) ->
       let v1 = expr ctx e1 in
       let v2 = expr ctx e2 in
@@ -66,6 +76,7 @@ let rec expr ctx = function
     let v1 = expr ctx e in
     begin match op, v1 with
     | Uneg, Vnum n2 -> Vnum( -.n2 )
+    | Unot, Vbool n2 -> Vbool (not n2)
     | _ -> failwith "Unsupported Expression"
     end
     (* When we have an identity we find it in the hastable and return it. *)
