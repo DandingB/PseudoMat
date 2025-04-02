@@ -66,7 +66,6 @@ let rec to_string e =
         if i == arrLen - 1 then str else str ^ ", "
       ) arr in
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
-  | _ -> failwith "Unsupported print"
 
   
 let rec expr ctx = function 
@@ -99,7 +98,10 @@ let rec expr ctx = function
         | Badd, Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
         | Badd, Vstring n1, Vstring n2  -> Vstring (n1 ^ n2)
         | Badd, Varray n1, Varray n2 -> Varray (Array.append n1 n2)
-        | Badd, _, _ -> Vstring(to_string v1 ^ to_string v2)
+        | Badd, _, _ -> 
+            let s1 = match to_string v1 with Vstring s -> s | _ -> failwith "Expected string" in
+            let s2 = match to_string v2 with Vstring s -> s | _ -> failwith "Expected string" in
+            Vstring(s1 ^ s2)
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
