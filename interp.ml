@@ -120,7 +120,13 @@ and stmt ctx = function
       done
     | _ -> failwith "For-loop start and end values must be numbers"
     end
-
+  | Swhile (e, bl) ->
+     while 
+      (* This is done to evaluate the new value of the condition *)
+       match expr ctx e with
+        | Vbool cond -> cond
+        | _ -> failwith "While-loop condition must evaluate to a boolean"
+       do stmt ctx bl done
     (* Last case fail *)
   | _ -> failwith "Unsupported statement"
 and block ctx = function

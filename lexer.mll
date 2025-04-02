@@ -45,8 +45,9 @@ rule next_token = parse
     | "be" { BE }
 
     (* Loops *)
-    | "For" {FOR}
-    | "to" {TO}
+    | "For" { FOR }
+    | "to" { TO }
+    | "While" { WHILE }
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
     | data_type { DATATYPE }

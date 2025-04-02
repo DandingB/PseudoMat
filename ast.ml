@@ -38,6 +38,7 @@
      | Sprint of expr
      | Sblock of stmt list
      | Sfor of ident * expr * expr * stmt * stmt (* for(ident = e1; expr; stmt) {block}  *) (* For(i = 1; i<10; i++) {block}*)
+     | Swhile of expr * stmt
      | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
      | Seval of expr
      | Sset of expr * expr * expr (* e1[e2] = e3 *)
