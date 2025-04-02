@@ -29,6 +29,8 @@
      | Earray of expr list (* [e1,e2,...] *)
      | Eget of expr * expr (* e1[e2] *)
      | Ematrix of expr list list (* [[e1,e2,...],[e3,e4,...],...] *)
+     | Elength of expr
+
 
    and stmt =
      | Sif of expr * stmt * stmt (* if e1 then s1 else s2 *)
@@ -42,7 +44,6 @@
      | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
      | Seval of expr
      | Sset of expr * expr * expr (* e1[e2] = e3 *)
-     | Slength of ident
    
    and def = ident * ident list * stmt
    

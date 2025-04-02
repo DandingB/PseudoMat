@@ -58,8 +58,6 @@ stmt:
  | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
 //  Assign value to array. 
  | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr NEWLINE? { Sset (e1, e2, e3) }
-//  Length of array
- | id = ident DOT LENGTH { Slength id }
 //  FOR LOOPS
  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
@@ -91,6 +89,7 @@ expr:
  | NOT e = expr %prec UNOT { Eunop(Unot, e) }
  | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
  | e1 = expr LSQ e2 = expr RSQ { Eget (e1, e2) }
+ | e1 = expr DOT LENGTH { Elength e1 }
 
 ident:
   id = ID { { loc = ($startpos, $endpos); id } }
