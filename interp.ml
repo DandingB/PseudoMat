@@ -120,10 +120,10 @@ and stmt ctx = function
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
-  | Slength e1 ->
-    let v1 = expr ctx e1 in
+  | Slength ({id}) ->
+    let v1 = Hashtbl.find ctx id in
     begin match v1 with
-      | Varray arr -> Printf.printf "%d" (Array.length arr)
+      | Varray arr -> float (Array.length arr)
       | _ -> failwith "Invalid length operation"
     end
   | Sfor ({id}, e1, e2, s, bl) ->

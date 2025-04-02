@@ -41,7 +41,7 @@
      | Swhile of expr * stmt
      | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
      | Seval of expr
-     | Sset of ident * expr * expr (* e1[e2] = e3 *)
+     | Sset of expr * expr * expr (* e1[e2] = e3 *)
      | Slength of ident
    
    and def = ident * ident list * stmt

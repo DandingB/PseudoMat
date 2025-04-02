@@ -57,9 +57,9 @@ stmt:
 //  Assign new value to variabble. This will match: id = value
  | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
 //  Assign value to array. 
- | i1 = ident LSQ e2 = expr RSQ ASSIGN e3 = expr NEWLINE? { Sset (i1, e2, e3) }
+ | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr NEWLINE? { Sset (e1, e2, e3) }
 //  Length of array
- | e1 = ident DOT LENGTH { Slength e1 }
+ | id = ident DOT LENGTH { Slength id }
 //  FOR LOOPS
  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
