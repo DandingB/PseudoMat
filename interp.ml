@@ -54,6 +54,15 @@ let rec expr ctx = function
   | Earray l -> 
     let arr = Array.of_list (List.map (expr ctx) l) in
     Varray arr
+  | Eget (e1, e2) -> 
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    begin match v1, v2 with
+      | Varray arr, Vnum index -> 
+        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        else arr.(int_of_float index)
+      | _ -> failwith "Invalid array access"
+    end
   | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor  as op, e1, e2) ->
       let v1 = expr ctx e1 in
       let v2 = expr ctx e2 in

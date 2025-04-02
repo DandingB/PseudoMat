@@ -85,6 +85,7 @@ expr:
  | SUB e = expr %prec USUB { Eunop(Uneg, e) }
  | NOT e = expr %prec UNOT { Eunop(Unot, e) }
  | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
+ | e1 = expr LSQ e2 = expr RSQ { Eget (e1, e2) }
 
 ident:
   id = ID { { loc = ($startpos, $endpos); id } }
