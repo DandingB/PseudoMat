@@ -17,34 +17,6 @@ type ctx = (string, value) Hashtbl.t
 let has_decimal_part x =
   x <> floor x  
 
-let rec print_value e = 
-  match e with
-  | Vnone -> Printf.printf "None"
-  | Vnum n ->
-    if has_decimal_part n 
-    then Printf.printf "%f" n
-    else Printf.printf "%d" (int_of_float n)
-  | Vbool n -> Printf.printf "%B" n
-  | Vstring n -> Printf.printf "%s" n
-  | Varray arr ->
-    let arrLen = Array.length arr in
-    if arrLen == 0 then Printf.printf "[]" else 
-    Printf.printf "[";
-    Array.iteri (fun i v -> print_value v; if i == arrLen - 1 then Printf.printf "" else Printf.printf ", ") arr;
-    Printf.printf "]"
-  | _ -> failwith "Unsupported print"
-
-
-  (* let is_false = function
-  | Vnone
-  | Vbool false
-  | Vstring "" 
-  | Vlist [||] -> true
-  | Vnum n -> n = 0
-  | _ -> false 
-
-let is_true v = not (is_false v)  *)
-
 let rec to_string e =
   match e with
   | Vnone -> Vstring "None"
@@ -66,6 +38,25 @@ let rec to_string e =
         if i == arrLen - 1 then str else str ^ ", "
       ) arr in
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+
+let rec print_value e = 
+  let v1 = to_string e in
+  match v1 with
+  | Vstring n -> Printf.printf "%s" n
+  | _ -> failwith "Unsupported print"
+
+
+  (* let is_false = function
+  | Vnone
+  | Vbool false
+  | Vstring "" 
+  | Vlist [||] -> true
+  | Vnum n -> n = 0
+  | _ -> false 
+
+let is_true v = not (is_false v)  *)
+
+
 
   
 let rec expr ctx = function 
