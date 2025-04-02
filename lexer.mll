@@ -34,6 +34,7 @@ rule next_token = parse
     | '[' { LSQ }
     | ']' { RSQ }
     | ',' { COMMA }
+    | '.' { DOT }
     | "Not" { NOT }
     | "And" { AND }
     | "Or" { OR }
@@ -43,6 +44,9 @@ rule next_token = parse
     | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
     | ';' { SEMICOLON }
+    
+    (* Array *)
+    | "Length" { LENGTH }
 
     (* Comments *)
     | '#' [^'\n']* { next_token lexbuf }

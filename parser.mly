@@ -10,11 +10,12 @@
 %token <string> STRING
 %token TRUE FALSE 
 %token IF ELSEIF ELSE
+%token LENGTH
 %token FOR TO WHILE
 %token PRINT
 %token LP RP LC RC LSQ RSQ
 %token NEWLINE
-%token SEMICOLON COMMA 
+%token SEMICOLON COMMA DOT 
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
 %token LET AS BE ASSIGN DATATYPE
 %token <string> ID
@@ -55,6 +56,10 @@ stmt:
  | NEWLINE? LET e1 = ident AS DATATYPE NEWLINE? { Sassign (e1, Ecst(Cnone) ) } 
 //  Assign new value to variabble. This will match: id = value
  | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
+//  Assign value to array. 
+ | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr NEWLINE? { Sset (e1, e2, e3) }
+//  Length of array
+ | e1 = expr DOT LENGTH { Slength e1 }
 //  FOR LOOPS
  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)

@@ -110,6 +110,22 @@ and stmt ctx = function
     end
   | Sassign ({id}, e1) ->
     Hashtbl.replace ctx id (expr ctx e1)
+  | Sset (e1, e2, e3) ->
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    let v3 = expr ctx e3 in
+    begin match v1, v2 with
+      | Varray arr, Vnum index -> 
+        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        else arr.(int_of_float index) <- v3
+      | _ -> failwith "Invalid array access"
+    end
+  | Slength e1 ->
+    let v1 = expr ctx e1 in
+    begin match v1 with
+      | Varray arr -> Printf.printf "%d" (Array.length arr)
+      | _ -> failwith "Invalid length operation"
+    end
   | Sfor ({id}, e1, e2, s, bl) ->
     let v1 = expr ctx e1 in
     begin match v1 with
@@ -129,6 +145,7 @@ and stmt ctx = function
         done
     | _ -> failwith "For-loop start value must be a number"
     end
+  
   | Srange (e1, e2, bl) ->
     let v1 = expr ctx e1 in
     let v2 = expr ctx e2 in
