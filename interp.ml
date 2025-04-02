@@ -27,16 +27,21 @@ let rec to_string e =
   | Vbool n -> Vstring(Printf.sprintf "%B" n)
   | Vstring n -> Vstring(Printf.sprintf "%s" n)
   | Varray arr ->
+    (* Get array length *)
     let arrLen = Array.length arr in
+    (* If length == 0 just return empty array [] *)
     if arrLen == 0 then Vstring "[]"
     else 
+      (* Map all elements to string representation by calling to_string recursivly *)
       let elements = Array.mapi (fun i v ->
         let str = match to_string v with
           | Vstring s -> s
           | _ -> failwith "Expected string in to_string"
         in
+        (* If it is the last value we do not at a comma at the end *)
         if i == arrLen - 1 then str else str ^ ", "
       ) arr in
+      (* Concat all the elements *)
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
 
 let rec print_value e = 
