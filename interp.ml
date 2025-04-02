@@ -17,21 +17,37 @@ type ctx = (string, value) Hashtbl.t
 let has_decimal_part x =
   x <> floor x  
 
-let rec print_value e = 
+let rec to_string e =
   match e with
-  | Vnone -> Printf.printf "None"
+  | Vnone -> Vstring "None"
   | Vnum n ->
     if has_decimal_part n 
-    then Printf.printf "%f" n
-    else Printf.printf "%d" (int_of_float n)
-  | Vbool n -> Printf.printf "%B" n
-  | Vstring n -> Printf.printf "%s" n
+    then Vstring(Printf.sprintf "%f" n)
+    else Vstring(Printf.sprintf "%d" (int_of_float n))
+  | Vbool n -> Vstring(Printf.sprintf "%B" n)
+  | Vstring n -> Vstring(Printf.sprintf "%s" n)
   | Varray arr ->
+    (* Get array length *)
     let arrLen = Array.length arr in
-    if arrLen == 0 then Printf.printf "[]" else 
-    Printf.printf "[";
-    Array.iteri (fun i v -> print_value v; if i == arrLen - 1 then Printf.printf "" else Printf.printf ", ") arr;
-    Printf.printf "]"
+    (* If length == 0 just return empty array [] *)
+    if arrLen == 0 then Vstring "[]"
+    else 
+      (* Map all elements to string representation by calling to_string recursivly *)
+      let elements = Array.mapi (fun i v ->
+        let str = match to_string v with
+          | Vstring s -> s
+          | _ -> failwith "Expected string in to_string"
+        in
+        (* If it is the last value we do not at a comma at the end *)
+        if i == arrLen - 1 then str else str ^ ", "
+      ) arr in
+      (* Concat all the elements *)
+      Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+
+let rec print_value e = 
+  let v1 = to_string e in
+  match v1 with
+  | Vstring n -> Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
 
 
@@ -45,27 +61,7 @@ let rec print_value e =
 
 let is_true v = not (is_false v)  *)
 
-let rec to_string e =
-  match e with
-  | Vnone -> Vstring "None"
-  | Vnum n ->
-    if has_decimal_part n 
-    then Vstring(Printf.sprintf "%f" n)
-    else Vstring(Printf.sprintf "%d" (int_of_float n))
-  | Vbool n -> Vstring(Printf.sprintf "%B" n)
-  | Vstring n -> Vstring(Printf.sprintf "%s" n)
-  | Varray arr ->
-    let arrLen = Array.length arr in
-    if arrLen == 0 then Vstring "[]"
-    else 
-      let elements = Array.mapi (fun i v ->
-        let str = match to_string v with
-          | Vstring s -> s
-          | _ -> failwith "Expected string in to_string"
-        in
-        if i == arrLen - 1 then str else str ^ ", "
-      ) arr in
-      Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+
 
   
 let rec expr ctx = function 
