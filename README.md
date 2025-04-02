@@ -161,3 +161,43 @@ For(1 to 3){
     }
 }
 ```
+
+### While loops
+The syntax for `While-loops`:
+```javascript
+// Default While-loop
+// Will print number from 0-9
+Let k as number
+While (k < 10) {
+    Print(k)
+    k = k + 1
+}
+```
+
+<!-- TODO: Add element access example -->
+### Arrays
+Arrays in **PseudoMat** are 0 indexed.
+The syntax for `Arrays`:
+```javascript
+// Array decleration and assignment
+Let k be [1, 2, 3] as array
+Let k as array
+k = [1, 2, 3]
+```
+```javascript
+// Accessing element in array
+Let k be [1, 2, 3] as array
+Let y be k[2] as number
+// y -> 3
+
+y = k[0]
+// y -> 1
+```
+
+### Comments
+The syntax for `Comments`:
+```javascript
+# This is a single line comment
+(* This is a multiline 
+comment*)
+```

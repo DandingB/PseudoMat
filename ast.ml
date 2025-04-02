@@ -29,7 +29,9 @@
      | Earray of expr list (* [e1,e2,...] *)
      | Eget of expr * expr (* e1[e2] *)
      | Ematrix of expr list list (* [[e1,e2,...],[e3,e4,...],...] *)
-   
+     | Elength of expr
+
+
    and stmt =
      | Sif of expr * stmt * stmt (* if e1 then s1 else s2 *)
      | Selseif of expr * stmt * stmt (* elseif e1 then s1 else s2 *)
@@ -38,6 +40,7 @@
      | Sprint of expr
      | Sblock of stmt list
      | Sfor of ident * expr * expr * stmt * stmt (* for(ident = e1; expr; stmt) {block}  *) (* For(i = 1; i<10; i++) {block}*)
+     | Swhile of expr * stmt
      | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
      | Seval of expr
      | Sset of expr * expr * expr (* e1[e2] = e3 *)
