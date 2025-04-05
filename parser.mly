@@ -52,12 +52,12 @@ stmt:
 
 //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
 // This will match: Let id as type be value
- | NEWLINE? LET e1 = ident BE e2 = expr AS DATATYPE NEWLINE? { Sassign (e1, e2) } 
- | NEWLINE? LET e1 = ident AS DATATYPE NEWLINE? { Sassign (e1, Ecst(Cnone) ) } 
+ | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
+ | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
 //  Assign new value to variabble. This will match: id = value
- | e1 = ident ASSIGN e2 = expr NEWLINE? { Sassign (e1, e2) }
+ | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
 //  Assign value to array. 
- | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr NEWLINE? { Sset (e1, e2, e3) }
+ | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }
 //  FOR LOOPS
  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)

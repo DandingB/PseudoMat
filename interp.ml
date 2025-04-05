@@ -61,9 +61,6 @@ let rec print_value e =
 
 let is_true v = not (is_false v)  *)
 
-
-
-  
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
   | Ecst (Cnum n) -> Vnum n
