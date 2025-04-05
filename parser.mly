@@ -1,5 +1,6 @@
 %{
     open Ast
+    open Helpers
 %}
 
 // TODO: Make comments about tokens.
@@ -28,6 +29,7 @@
 %nonassoc USUB UNOT
 %%
 
+
 main:
  | NEWLINE? e = nonempty_list(block) NEWLINE? EOF { Sblock e }
 
@@ -35,21 +37,21 @@ block:
  | NEWLINE? e1 = stmt NEWLINE? { e1 }
  | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC NEWLINE? { Sblock e }
 
+// Else If blocks. Retuns a list of tuples consiting of  the expression and the block: [(expr1,block1), (expr2,block2),...].
+elseif_blocks:
+ { [] }
+| ELSEIF LP e = expr RP b = block rest = elseif_blocks { (e, b) :: rest }
+
+// Else block. Returns an optional block. If there is no else block, we return None. If there is an else block, we return Some b.
+else_block:
+ { None }
+//   We retun the Some b. Some is a buildin constructor in OCaml. Some is used to wrap a value into the option type.
+| ELSE b = block { Some b }
+
 stmt:
  | PRINT LP e = expr RP { Sprint e }
-//  If statement without else
- | IF LP e = expr RP b = block { Sif (e, b, Sblock []) }
-//  If statement with else
- | IF LP e = expr RP b1 = block ELSE b2 = block { Sif (e, b1, b2) }
-//  If statement with elseif. We check if there has been an if before the else if.
- | IF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1, Sblock []) }
-//  If, elseif and else match.
- | IF LP expr RP block ELSEIF LP e = expr RP b1 = block ELSE b2 = block { Selseif (e, b1, b2) }
-//  Else if statement. We check if there has been an else if before the else if.
- | ELSEIF LP expr RP block ELSEIF LP e = expr RP b1 = block { Selseif (e, b1, Sblock []) }
-//  Else after elseif. We check if there has been an else if before the else.
- | ELSEIF LP e = expr RP b1 = block ELSE b2 = block { Selseif (e, b1, b2) }
-
+ | IF LP e1 = expr RP b1 = block elseifs = elseif_blocks elseopt = else_block 
+    { build_if_chain e1 b1 elseifs elseopt }
 //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
 // This will match: Let id as type be value
  | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 

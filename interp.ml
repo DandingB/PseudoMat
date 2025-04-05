@@ -126,13 +126,25 @@ and stmt ctx = function
   | Sif (e, bl1, bl2) -> 
     let e1 = expr ctx e in
     begin match e1 with
-      | Vbool e1 -> if e1 then stmt ctx bl1 else stmt ctx bl2 
+      | Vbool e1 -> 
+          if e1 then stmt ctx bl1
+          (* We check if else block is present *)
+          else (match bl2 with
+          (* Exectue else if present *)
+                | Some b2 -> stmt ctx b2  
+          (* Do nothing if not present *)
+                | None -> ())  
       | _ -> failwith "Not boolean"
     end
   | Selseif (e, bl1, bl2) ->
     let e1 = expr ctx e in
     begin match e1 with
-      | Vbool e1 -> if e1 then stmt ctx bl1  else stmt ctx bl2
+      | Vbool e1 -> 
+        (* Same logic as for if *)
+          if e1 then stmt ctx bl1
+          else (match bl2 with
+                | Some b2 -> stmt ctx b2  
+                | None -> ())  
       | _ -> failwith "Not boolean"
     end
   | Sassign ({id}, e1) ->
