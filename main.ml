@@ -24,3 +24,4 @@ let () =
   let lexbuf = Lexing.from_channel c in
   let result = Parser.main Lexer.next_token lexbuf in
   Interp.file result
+
