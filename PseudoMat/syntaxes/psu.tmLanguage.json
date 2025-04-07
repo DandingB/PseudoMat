@@ -1,0 +1,78 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "PseudoMat",
+	"scopeName": "source.psu",
+	"patterns": [
+	  { "include": "#keywords" },
+	  { "include": "#strings" },
+	  { "include": "#numbers" },
+	  { "include": "#booleans" },
+	  { "include": "#operators" },
+	  { "include": "#comments" },
+	  { "include": "#brackets" },
+	  { "include": "#variables" }
+	],
+	"repository": {
+	  "keywords": {
+		"patterns": [{
+		  "name": "keyword.control.psu",
+		  "match": "\\b(Let|If|Else|Else\\s+If|While|For|Return|Print|to|as|be)\\b"
+		}]
+	  },
+	  "strings": {
+		"name": "string.quoted.double.psu",
+		"begin": "\"",
+		"end": "\"",
+		"patterns": [
+		  {
+			"name": "constant.character.escape.psu",
+			"match": "\\\\."
+		  }
+		]
+	  },
+	  "numbers": {
+		"patterns": [{
+		  "name": "constant.numeric.psu",
+		  "match": "\\b\\d+(\\.\\d+)?\\b"
+		}]
+	  },
+	  "booleans": {
+		"patterns": [{
+		  "name": "constant.language.boolean.psu",
+		  "match": "\\b(True|False)\\b"
+		}]
+	  },
+	  "operators": {
+		"patterns": [{
+		  "name": "keyword.operator.psu",
+		  "match": "(\\+|\\-|\\*|\\/|=|!=|<|>|<=|>=|\\^|\\bOr\\b)"
+		}]
+	  },
+	  "comments": {
+		"patterns": [
+		  {
+			"name": "comment.line.number-sign.psu",
+			"match": "#.*$"
+		  },
+		  {
+			"name": "comment.block.psu",
+			"begin": "\\(\\*",
+			"end": "\\*\\)"
+		  }
+		]
+	  },
+	  "brackets": {
+		"patterns": [{
+		  "name": "punctuation.brackets.psu",
+		  "match": "[\\(\\)\\{\\}\\[\\]]"
+		}]
+	  },
+	  "variables": {
+		"patterns": [{
+		  "name": "variable.other.psu",
+		  "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+		}]
+	  }
+	}
+  }
+  
