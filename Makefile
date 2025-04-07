@@ -1,3 +1,3 @@
 default:
 	dune build
-	dune exec ./Main.exe test.ps
+	dune exec ./Main.exe test.psu

@@ -1,0 +1,25 @@
+{
+  "name": "PseudoMat",
+  "displayName": "PseudoMat",
+  "description": "Gamer",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "psu",
+      "aliases": ["PseudoMat", "psu"],
+      "extensions": [".psu"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "psu",
+      "scopeName": "source.psu",
+      "path": "./syntaxes/psu.tmLanguage.json"
+    }]
+  }
+}
