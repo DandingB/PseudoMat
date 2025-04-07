@@ -4,6 +4,7 @@ Function Gamer(hej, gamer){
     Print("hej")
 }
 
+
 Let arr be [6, 2, 9, 1, 5, 6] as array
 Let n be arr.Length as number
 Let i as number
@@ -30,3 +31,5 @@ For (i = 0; i < n - 1; i = i + 1) {
 # Print the sorted array
 Print("After: " + arr + "\n" + (1+1) + "\n")
 Print("HASDFHJASDF")
+
+
