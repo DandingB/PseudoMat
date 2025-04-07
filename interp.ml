@@ -13,6 +13,13 @@ type value =
   following OCaml functions as parameter `ctx`. *)
 
 type ctx = (string, value) Hashtbl.t
+let functions =  (Hashtbl.create 17 : (string, ident list* stmt) Hashtbl.t)
+
+(* This function is used to check if a number is an integer. *)
+(* It is used to format the output of numbers correctly. *)
+
+(* This function is used to check if a number has a decimal part. *)
+(* It is used to format the output of numbers correctly. *)
 
 let has_decimal_part x =
   x <> floor x  
@@ -49,17 +56,6 @@ let rec print_value e =
   match v1 with
   | Vstring n -> Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
-
-
-  (* let is_false = function
-  | Vnone
-  | Vbool false
-  | Vstring "" 
-  | Vlist [||] -> true
-  | Vnum n -> n = 0
-  | _ -> false 
-
-let is_true v = not (is_false v)  *)
 
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
@@ -205,6 +201,11 @@ and block ctx = function
     | s :: sl -> stmt ctx s; block ctx sl
 
 
-let file (dl) =
-  stmt (Hashtbl.create 17) dl
+let file (func_list, e) =
+  List.iter (fun (id, args, bl) ->
+    (* Add function to the hashtable *)
+    Hashtbl.add functions id.id (args, bl)
+    ) func_list;
+    stmt (Hashtbl.create 17) e
+
 

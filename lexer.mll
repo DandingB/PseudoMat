@@ -44,6 +44,10 @@ rule next_token = parse
     | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
     | ';' { SEMICOLON }
+
+    (* Function *)
+    | "Function" { FUNCTION }
+    | "Return" { RETURN }
     
     (* Array *)
     | "Length" { LENGTH }
