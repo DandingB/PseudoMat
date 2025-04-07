@@ -45,7 +45,7 @@
     | Seval of expr
     | Sset of expr * expr * expr (* e1[e2] = e3 *)
    
-   and def = ident * ident list * stmt
+   and func = ident * ident list * stmt
    
-   and file = def list * stmt
+   and file = func list * stmt
    

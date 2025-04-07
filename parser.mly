@@ -19,9 +19,9 @@
 %token SEMICOLON COMMA DOT 
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
 %token LET AS BE ASSIGN DATATYPE
-%token FUNCTION RETURN
+%token FUNCTION
 %token <string> ID
-%start <Ast.stmt> main
+%start <Ast.file> main
 (* Precedence *)
 %left AND OR 
 %left LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS
@@ -32,10 +32,10 @@
 
 
 main:
- | NEWLINE? func_list = list(func) e = nonempty_list(block) NEWLINE? EOF { func_list; Sblock e }
+ | NEWLINE? func_list = list(func) e = nonempty_list(block) NEWLINE? EOF { func_list, Sblock e }
 
 func: 
- | FUNCTION id = ident LP args = separated_list(COMMA, expr) RP b = block { id, args, b }
+ | FUNCTION id = ident LP args = separated_list(COMMA, ident) RP b = block { id, args, b }
 
 block:
  | NEWLINE? e1 = stmt NEWLINE? { e1 }
