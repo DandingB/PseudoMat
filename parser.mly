@@ -19,7 +19,7 @@
 %token SEMICOLON COMMA DOT 
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
 %token LET AS BE ASSIGN DATATYPE
-%token FUNCTION
+%token FUNCTION RETURN
 %token <string> ID
 %start <Ast.file> main
 (* Precedence *)
@@ -69,6 +69,7 @@ stmt:
  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
   //  WHILE LOOPS
  | WHILE LP e = expr RP b = block {Swhile(e, b) } (* for(e1 to e2) {b} *)
+ | RETURN e = expr { Sreturn e } (* return e *)
  | e = expr
     { Seval e }
 
@@ -96,6 +97,9 @@ expr:
  | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
  | e1 = expr LSQ e2 = expr RSQ { Eget (e1, e2) }
  | e1 = expr DOT LENGTH { Elength e1 }
+//  Function call.
+ | func_id = ident LP expr_list = separated_list(COMMA, expr) RP
+    { Ecall (func_id, expr_list) }
 
 
 

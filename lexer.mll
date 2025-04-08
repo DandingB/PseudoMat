@@ -47,7 +47,7 @@ rule next_token = parse
 
     (* Function *)
     | "Function" { FUNCTION }
-    (* | "Return" { RETURN } *)
+    | "Return" { RETURN }
     
     (* Array *)
     | "Length" { LENGTH }
