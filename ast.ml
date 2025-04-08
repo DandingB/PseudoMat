@@ -25,7 +25,7 @@
      | Eident of ident
      | Ebinop of binop * expr * expr
      | Eunop of unop * expr
-     | Ecall of ident * expr list
+     | Ecall of ident * expr list (* f(e1,e2,...)*)
      | Earray of expr list (* [e1,e2,...] *)
      | Eget of expr * expr (* e1[e2] *)
      | Ematrix of expr list list (* [[e1,e2,...],[e3,e4,...],...] *)
@@ -45,7 +45,7 @@
     | Seval of expr
     | Sset of expr * expr * expr (* e1[e2] = e3 *)
    
-   and def = ident * ident list * stmt
+   and func = ident * ident list * stmt
    
-   and file = def list * stmt
+   and file = func list * stmt
    

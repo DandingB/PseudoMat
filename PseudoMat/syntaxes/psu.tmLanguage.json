@@ -16,7 +16,7 @@
 	  "keywords": {
 		"patterns": [{
 		  "name": "keyword.control.psu",
-		  "match": "\\b(Let|If|Else|Else\\s+If|While|For|Return|Print|to|as|be)\\b"
+		  "match": "\\b(Let|If|Else|Else\\s+If|While|For|Return|Print|to|as|be|Function)\\b"
 		}]
 	  },
 	  "strings": {

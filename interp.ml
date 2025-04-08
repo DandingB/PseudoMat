@@ -13,6 +13,15 @@ type value =
   following OCaml functions as parameter `ctx`. *)
 
 type ctx = (string, value) Hashtbl.t
+let functions =  (Hashtbl.create 17 : (string, ident list* stmt) Hashtbl.t)
+
+exception Return of value
+
+(* This function is used to check if a number is an integer. *)
+(* It is used to format the output of numbers correctly. *)
+
+(* This function is used to check if a number has a decimal part. *)
+(* It is used to format the output of numbers correctly. *)
 
 let has_decimal_part x =
   x <> floor x  
@@ -49,17 +58,6 @@ let rec print_value e =
   match v1 with
   | Vstring n -> Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
-
-
-  (* let is_false = function
-  | Vnone
-  | Vbool false
-  | Vstring "" 
-  | Vlist [||] -> true
-  | Vnum n -> n = 0
-  | _ -> false 
-
-let is_true v = not (is_false v)  *)
 
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
@@ -117,12 +115,39 @@ let rec expr ctx = function
     end
     (* When we have an identity we find it in the hastable and return it. *)
   | Eident {id} -> Hashtbl.find ctx id
+  (* Functions *)
+  | Ecall ({id=func_id}, el) ->
+    (* We find the function with id f *)
+        let (params, body) = Hashtbl.find functions func_id in
+        (* We create a new context specific for the function *)
+        let new_ctx = Hashtbl.create 17 in
+        (* We iterate over the function formal params and assign
+         the values provided to the call to each of these vraiables.
+
+         This means we assign the provided values from the el (expr list) 
+         to the vars in the function:
+         Function f(var1, var2){}
+         f(el1, el2)
+
+         *)
+        List.iter2 (fun {id} e -> Hashtbl.add new_ctx id (expr ctx e)) params el;
+        (* We then try to evaluate the body of the function *)
+        (* Retun non if we fail. Else, return value *)
+        begin try
+                stmt new_ctx body;
+                Vnone
+            with 
+            Return v -> v
+        end
   | _ -> failwith "Unsupported expression"
 
 (* stmts is all the statements in the block. *)
 and stmt ctx = function
   | Sprint e -> print_value (expr ctx e)
   | Sblock stmts -> block ctx stmts
+  (* Makes sure that we can call things like functions directly. *)
+  | Seval e ->
+    ignore (expr ctx e)
   | Sif (e, bl1, bl2) -> 
     let e1 = expr ctx e in
     begin match e1 with
@@ -159,7 +184,6 @@ and stmt ctx = function
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
-  
   | Sfor ({id}, e1, e2, s, bl) ->
     let v1 = expr ctx e1 in
     begin match v1 with
@@ -198,13 +222,21 @@ and stmt ctx = function
         | Vbool cond -> cond
         | _ -> failwith "While-loop condition must evaluate to a boolean"
        do stmt ctx bl done
-    (* Last case fail *)
+  (* Return *)
+  | Sreturn e ->
+      raise (Return (expr ctx e))
+  (* Last case fail *)
   | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
     | s :: sl -> stmt ctx s; block ctx sl
 
 
-let file (dl) =
-  stmt (Hashtbl.create 17) dl
+let file (func_list, e) =
+  List.iter (fun (id, args, bl) ->
+    (* Add function to the hashtable *)
+    Hashtbl.add functions id.id (args, bl)
+    ) func_list;
+    stmt (Hashtbl.create 17) e
+
 
