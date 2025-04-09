@@ -110,7 +110,6 @@ expr:
 // Modified matrix handling
 matrix_rows:
  | row = matrix_row { [row] }
-//  | row = matrix_row SEMICOLON { [row] }
  | row = matrix_row SEMICOLON rest = matrix_rows { row :: rest }
 
 matrix_row:

@@ -15,10 +15,9 @@ c = [
     1, 2
     ]
 
-Let b as matrix
-b = [ 
+Let b be [ 
     1, 2;
-    1, 7
-    ]
+    1, 2
+    ] as matrix
 
 Print("MATRIX: \n" + (c+b) + "\n")
