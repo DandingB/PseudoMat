@@ -7,6 +7,7 @@
      | Uneg (* -e *)
      | Unot (* not e *)
    
+     (* TODO: Remove unused operators. *)
    type binop =
      | Badd | Bsub | Bmul | Bdiv | Bmod | Bpow   (* + - * // % ^ *)
      | Beq | Bneq | Blt | Ble | Bgt | Bge  (* == != < <= > >= *)

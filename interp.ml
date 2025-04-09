@@ -7,6 +7,7 @@ type value =
   | Vnum of float
   | Vstring of string
   | Varray of value array
+  | Vmatrix of value array array
 
 (* Local variables (function parameters and local variables introduced
   by assignments) are stored in a hash table that is passed to the
@@ -52,6 +53,23 @@ let rec to_string e =
       ) arr in
       (* Concat all the elements *)
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+  | Vmatrix matrix ->
+    (* Get matrix length *)
+    let matrixLen = Array.length matrix in
+    (* If length == 0 just return empty array [] *)
+    if matrixLen == 0 then Vstring "[]"
+    else 
+      (* Map all elements to string representation by calling to_string recursivly *)
+      let elements = Array.mapi (fun i arr ->
+        let str = match to_string (Varray arr) with
+          | Vstring s -> s
+          | _ -> failwith "Expected string in to_string"
+        in
+        (* If it is the last value we do not at a comma at the end *)
+        if i == matrixLen - 1 then str else str ^ ",\n"
+      ) matrix in
+      (* Concat all the elements *)
+      Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
 
 let rec print_value e = 
   let v1 = to_string e in
@@ -82,7 +100,7 @@ let rec expr ctx = function
       | Varray arr -> Vnum (float (Array.length arr))
       | _ -> failwith "Invalid length operation"
     end
-  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor  as op, e1, e2) ->
+  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor | Bmod | Bpow  as op, e1, e2) ->
       let v1 = expr ctx e1 in
       let v2 = expr ctx e2 in
       begin match op, v1, v2 with
@@ -96,6 +114,8 @@ let rec expr ctx = function
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
+        | Bmod, Vnum n1, Vnum n2 -> Vnum (mod_float n1 n2)
+        | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
         | Blt, Vnum n1, Vnum n2 -> Vbool (n1 < n2)
         | Beq, Vnum n1, Vnum n2 -> Vbool (n1 == n2)
         | Bgt, Vnum n1, Vnum n2 -> Vbool (n1 > n2)
@@ -139,6 +159,14 @@ let rec expr ctx = function
             with 
             Return v -> v
         end
+  (* Matrix *)
+  (* expr list list *)
+  | Ematrix l ->
+    let matrix = Array.of_list (List.map (fun row ->
+      Array.of_list (List.map (expr ctx) row)
+    ) l) in
+    Vmatrix matrix
+  (* We do not support this yet *)
   | _ -> failwith "Unsupported expression"
 
 (* stmts is all the statements in the block. *)

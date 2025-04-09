@@ -10,7 +10,7 @@
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
 let space = ' ' | '\t' | '\n'
-let data_type = "number" | "string" | "boolean" | "array"
+let data_type = "number" | "string" | "boolean" | "array" | "matrix"
 
 rule next_token = parse 
     | space+ { next_token lexbuf }
@@ -44,6 +44,8 @@ rule next_token = parse
     | "Else" space+ "If" { ELSEIF }
     | "Else" { ELSE }
     | ';' { SEMICOLON }
+    | '^' { POW }
+    | '%' { MOD }
 
     (* Function *)
     | "Function" { FUNCTION }
@@ -51,6 +53,7 @@ rule next_token = parse
     
     (* Array *)
     | "Length" { LENGTH }
+    (* | digit+ as n1 'x' digit+ as n2 { DIMENSION(int_of_string n1, int_of_string n2) } *)
 
     (* Comments *)
     | '#' [^'\n']* { next_token lexbuf }
