@@ -74,6 +74,7 @@ stmt:
     } 
   //  Assign new value to variabble. This will match: id = value
   | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
+  | e1 = expr LSQ e2 = expr COMMA e3 = expr RSQ ASSIGN e4 = expr { Ssetmatrix (e1, e2, e3, e4) } (* Assign value to matrix. *)
   //  Assign value to array. 
   | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }
   //  FOR LOOPS

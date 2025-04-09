@@ -229,6 +229,20 @@ and stmt ctx = function
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
+  | Ssetmatrix (e1, e2, e3, e4) ->
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    let v3 = expr ctx e3 in
+    let v4 = expr ctx e4 in
+    begin match v1, v2, v3 with 
+        | Vmatrix matrix, Vnum row, Vnum col -> 
+          if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
+            failwith "Index out of bounds"
+          else matrix.(int_of_float row).(int_of_float col) <- v4
+        | _ -> failwith "Invalid matrix access"
+   end
+   
+  (* For *)
   | Sfor ({id}, e1, e2, s, bl) ->
     let v1 = expr ctx e1 in
     begin match v1 with
