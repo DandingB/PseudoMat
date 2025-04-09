@@ -225,6 +225,10 @@ and stmt ctx = function
   (* Return *)
   | Sreturn e ->
       raise (Return (expr ctx e))
+  | Sfunc (id, args, bl) ->
+    (* Add function to the hashtable *)
+    Hashtbl.add functions id.id (args, bl)
+  (* Print *)
   (* Last case fail *)
   | _ -> failwith "Unsupported statement"
 and block ctx = function
@@ -232,11 +236,7 @@ and block ctx = function
     | s :: sl -> stmt ctx s; block ctx sl
 
 
-let file (func_list, e) =
-  List.iter (fun (id, args, bl) ->
-    (* Add function to the hashtable *)
-    Hashtbl.add functions id.id (args, bl)
-    ) func_list;
+let file (e) =
     stmt (Hashtbl.create 17) e
 
 
