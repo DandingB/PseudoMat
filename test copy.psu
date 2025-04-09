@@ -1,15 +1,5 @@
 # Bubble Sort Implementation
 
-Function add(num1, num2){
-    Function k(num1, num2) {
-        Return num1 + num2
-    }
-    Return k(num1,num2)
-}
-
-Print("LOORT:" + add(1,2) + "\n")
-
-
 Let arr be [6, 2, 9, 1, 5, 6] as array
 Let n be arr.Length as number
 Let i as number
@@ -31,6 +21,16 @@ For (i = 0; i < n - 1; i = i + 1) {
             arr[j + 1] = temp
         }
     }
+}
+
+Function outer(x) {
+    Let y be 10 as number;
+
+    Function inner(z) {
+        Return z + y;
+    }
+
+    Return inner(x);
 }
 
 # Print the sorted array

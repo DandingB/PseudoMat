@@ -44,8 +44,9 @@
     | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
     | Seval of expr
     | Sset of expr * expr * expr (* e1[e2] = e3 *)
+    | Sfunc of ident * ident list * stmt (* function f(ident1, ident2, ...) {block} *)
    
    and func = ident * ident list * stmt
    
-   and file = func list * stmt
+   and file = stmt
    

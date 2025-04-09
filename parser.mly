@@ -32,7 +32,7 @@
 
 
 main:
- | NEWLINE? func_list = list(func) e = nonempty_list(block) NEWLINE? EOF { func_list, Sblock e }
+ | NEWLINE? e = nonempty_list(block) NEWLINE? EOF { Sblock e }
 
 func: 
  | FUNCTION id = ident LP args = separated_list(COMMA, ident) RP b = block { id, args, b }
@@ -53,24 +53,26 @@ else_block:
 | ELSE b = block { Some b }
 
 stmt:
- | PRINT LP e = expr RP { Sprint e }
- | IF LP e1 = expr RP b1 = block elseifs = elseif_blocks elseopt = else_block 
+  | PRINT LP e = expr RP { Sprint e }
+  | IF LP e1 = expr RP b1 = block elseifs = elseif_blocks elseopt = else_block 
     { build_if_chain e1 b1 elseifs elseopt }
-//  First expression is the ID expression returning Eident. Second is the value of the ID expression.
-// This will match: Let id as type be value
- | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
- | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
-//  Assign new value to variabble. This will match: id = value
- | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
-//  Assign value to array. 
- | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }
-//  FOR LOOPS
- | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
- | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
+  //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
+  // This will match: Let id as type be value
+  | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
+  | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
+  //  Assign new value to variabble. This will match: id = value
+  | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
+  //  Assign value to array. 
+  | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }
+  //  FOR LOOPS
+  | FOR LP id = ident ASSIGN e1 = expr SEMICOLON e2 = expr SEMICOLON s = stmt RP b = block { Sfor (id, e1,e2,s,b) } (* for(id = e1; e2; s) {b} *)
+  | FOR LP e1 = expr TO e2 = expr RP b = block {Srange(e1, e2, b) } (* for(e1 to e2) {b} *)
   //  WHILE LOOPS
- | WHILE LP e = expr RP b = block {Swhile(e, b) } (* for(e1 to e2) {b} *)
- | RETURN e = expr { Sreturn e } (* return e *)
- | e = expr
+  | WHILE LP e = expr RP b = block {Swhile(e, b) } (* for(e1 to e2) {b} *)
+  //  Function
+  | f = func { let (id, args, b) = f in Sfunc (id, args, b) } (* function definition *)
+  | RETURN e = expr { Sreturn e } (* return e *)
+  | e = expr
     { Seval e }
 
 expr:
