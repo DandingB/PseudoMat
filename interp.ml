@@ -107,6 +107,23 @@ let rec expr ctx = function
         | Badd, Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
         | Badd, Vstring n1, Vstring n2  -> Vstring (n1 ^ n2)
         | Badd, Varray n1, Varray n2 -> Varray (Array.append n1 n2)
+        | Badd, Vmatrix m1, Vmatrix m2 ->
+            (* We make sure that the matrix dimensions are the same *)
+            if Array.length m1 <> Array.length m2 || Array.length m1.(0) <> Array.length m2.(0) then
+              failwith "Matrix dimensions do not match for addition"
+            else
+              (* We create a new matrix with the same dimensions.
+              We do this by looping over the first matrix, then the second and adding each elment in the rows.
+              We end out returning the new matrix.
+              *)
+              let result = Array.mapi (fun i row1 ->
+                Array.mapi (fun j val1 ->
+                  match val1, m2.(i).(j) with
+                  | Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
+                  | _ -> failwith "Matrix addition only supports numeric values"
+                ) row1
+              ) m1 in
+              Vmatrix result
         | Badd, _, _ -> 
             let s1 = match to_string v1 with Vstring s -> s | _ -> failwith "Expected string" in
             let s2 = match to_string v2 with Vstring s -> s | _ -> failwith "Expected string" in
