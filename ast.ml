@@ -48,6 +48,5 @@
    
    and func = ident * ident list * stmt
    
-   (* and file = func list * stmt *)
    and file = stmt
    
