@@ -53,7 +53,7 @@ rule next_token = parse
     
     (* Array *)
     | "Length" { LENGTH }
-    (* | digit+ as n1 'x' digit+ as n2 { DIMENSION(int_of_string n1, int_of_string n2) } *)
+    | (digit+ as n1) 'x' (digit+ as n2) { DIMENSION(float_of_string n1, float_of_string n2) }
 
     (* Comments *)
     | '#' [^'\n']* { next_token lexbuf }

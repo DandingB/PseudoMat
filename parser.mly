@@ -9,6 +9,7 @@
 %token EOF
 %token <float> NUMBER
 %token <string> STRING
+%token <float * float> DIMENSION
 %token TRUE FALSE 
 %token IF ELSEIF ELSE
 %token LENGTH
@@ -61,6 +62,16 @@ stmt:
   // This will match: Let id as type be value
   | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
   | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
+  | LET e1 = ident AS d = DIMENSION DATATYPE
+    {
+      let (w, h) = d in
+      let rows = int_of_float h in
+      let cols = int_of_float w in
+      let matrix = Ematrix (
+        List.init rows (fun _ -> List.init cols (fun _ -> Ecst (Cnum 0.)))
+      ) in
+      Sassign (e1, matrix)
+    } 
   //  Assign new value to variabble. This will match: id = value
   | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
   //  Assign value to array. 
