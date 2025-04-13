@@ -1,0 +1,13 @@
+# Conditional logic
+Let num be 7 as number
+Print("\nDeclared num to be 7 as number\n")
+
+If (num < 5) {
+    Print("\nnum is less than 5")
+} Else If (num == 5) {
+    Print("\nnum is equal to 5")
+} Else {
+    Print("\nnum is greater than 5")
+}
+
+Print("\n-----------------------------------------------------------------------------\n\n")
