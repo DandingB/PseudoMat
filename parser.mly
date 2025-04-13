@@ -4,11 +4,12 @@
 %}
 
 // TODO: Make comments about tokens.
-%token ADD MUL DIV SUB
+%token ADD MUL DIV SUB POW MOD
 %token NOT
 %token EOF
 %token <float> NUMBER
 %token <string> STRING
+%token <float * float> DIMENSION
 %token TRUE FALSE 
 %token IF ELSEIF ELSE
 %token LENGTH
@@ -26,7 +27,8 @@
 %left AND OR 
 %left LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS
 %left ADD SUB 
-%left MUL DIV
+%left MUL DIV MOD
+%left POW
 %nonassoc USUB UNOT
 %%
 
@@ -60,8 +62,19 @@ stmt:
   // This will match: Let id as type be value
   | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
   | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
+  | LET e1 = ident AS d = DIMENSION DATATYPE
+    {
+      let (w, h) = d in
+      let rows = int_of_float h in
+      let cols = int_of_float w in
+      let matrix = Ematrix (
+        List.init rows (fun _ -> List.init cols (fun _ -> Ecst (Cnum 0.)))
+      ) in
+      Sassign (e1, matrix)
+    } 
   //  Assign new value to variabble. This will match: id = value
   | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
+  | e1 = expr LSQ e2 = expr COMMA e3 = expr RSQ ASSIGN e4 = expr { Ssetmatrix (e1, e2, e3, e4) } (* Assign value to matrix. *)
   //  Assign value to array. 
   | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }
   //  FOR LOOPS
@@ -85,6 +98,8 @@ expr:
  | e1 = expr MUL e2 = expr { Ebinop (Bmul, e1, e2) }
  | e1 = expr DIV e2 = expr { Ebinop (Bdiv, e1, e2) }
  | e1 = expr SUB e2 = expr { Ebinop (Bsub, e1, e2) }
+ | e1 = expr POW e2 = expr { Ebinop (Bpow, e1, e2) }
+ | e1 = expr MOD e2 = expr { Ebinop (Bmod, e1, e2) }
  | e1 = expr LESS e2 = expr { Ebinop(Blt, e1, e2) }
  | e1 = expr GREATER e2 = expr { Ebinop(Bgt, e1, e2) }
  | e1 = expr LESSEQUALS e2 = expr { Ebinop(Ble, e1, e2) }
@@ -97,12 +112,20 @@ expr:
  | SUB e = expr %prec USUB { Eunop(Uneg, e) }
  | NOT e = expr %prec UNOT { Eunop(Unot, e) }
  | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
+ | LSQ rows = matrix_rows RSQ { Ematrix rows }
  | e1 = expr LSQ e2 = expr RSQ { Eget (e1, e2) }
  | e1 = expr DOT LENGTH { Elength e1 }
 //  Function call.
  | func_id = ident LP expr_list = separated_list(COMMA, expr) RP
     { Ecall (func_id, expr_list) }
 
+// Modified matrix handling
+matrix_rows:
+ | row = matrix_row { [row] }
+ | row = matrix_row SEMICOLON rest = matrix_rows { row :: rest }
+
+matrix_row:
+ | elements = separated_list(COMMA, expr) { elements }
 
 
 ident:

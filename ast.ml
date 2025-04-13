@@ -7,6 +7,7 @@
      | Uneg (* -e *)
      | Unot (* not e *)
    
+     (* TODO: Remove unused operators. *)
    type binop =
      | Badd | Bsub | Bmul | Bdiv | Bmod | Bpow   (* + - * // % ^ *)
      | Beq | Bneq | Blt | Ble | Bgt | Bge  (* == != < <= > >= *)
@@ -44,6 +45,7 @@
     | Srange of expr * expr * stmt (* for(e1 to e2) {block} *)
     | Seval of expr
     | Sset of expr * expr * expr (* e1[e2] = e3 *)
+    | Ssetmatrix of expr * expr * expr * expr (* e1[e2][e3] = e4 *)
     | Sfunc of ident * ident list * stmt (* function f(ident1, ident2, ...) {block} *)
    
    and func = ident * ident list * stmt

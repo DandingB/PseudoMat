@@ -7,6 +7,7 @@ type value =
   | Vnum of float
   | Vstring of string
   | Varray of value array
+  | Vmatrix of value array array
 
 (* Local variables (function parameters and local variables introduced
   by assignments) are stored in a hash table that is passed to the
@@ -52,6 +53,23 @@ let rec to_string e =
       ) arr in
       (* Concat all the elements *)
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
+  | Vmatrix matrix ->
+    (* Get matrix length *)
+    let matrixLen = Array.length matrix in
+    (* If length == 0 just return empty array [] *)
+    if matrixLen == 0 then Vstring "[]"
+    else 
+      (* Map all elements to string representation by calling to_string recursivly *)
+      let elements = Array.mapi (fun i arr ->
+        let str = match to_string (Varray arr) with
+          | Vstring s -> s
+          | _ -> failwith "Expected string in to_string"
+        in
+        (* If it is the last value we do not at a comma at the end *)
+        if i == matrixLen - 1 then str else str ^ ",\n"
+      ) matrix in
+      (* Concat all the elements *)
+      Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
 
 let rec print_value e = 
   let v1 = to_string e in
@@ -82,13 +100,30 @@ let rec expr ctx = function
       | Varray arr -> Vnum (float (Array.length arr))
       | _ -> failwith "Invalid length operation"
     end
-  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor  as op, e1, e2) ->
+  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor | Bmod | Bpow  as op, e1, e2) ->
       let v1 = expr ctx e1 in
       let v2 = expr ctx e2 in
       begin match op, v1, v2 with
         | Badd, Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
         | Badd, Vstring n1, Vstring n2  -> Vstring (n1 ^ n2)
         | Badd, Varray n1, Varray n2 -> Varray (Array.append n1 n2)
+        | Badd, Vmatrix m1, Vmatrix m2 ->
+            (* We make sure that the matrix dimensions are the same *)
+            if Array.length m1 <> Array.length m2 || Array.length m1.(0) <> Array.length m2.(0) then
+              failwith "Matrix dimensions do not match for addition"
+            else
+              (* We create a new matrix with the same dimensions.
+              We do this by looping over the first matrix, then the second and adding each elment in the rows.
+              We end out returning the new matrix.
+              *)
+              let result = Array.mapi (fun i row1 ->
+                Array.mapi (fun j val1 ->
+                  match val1, m2.(i).(j) with
+                  | Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
+                  | _ -> failwith "Matrix addition only supports numeric values"
+                ) row1
+              ) m1 in
+              Vmatrix result
         | Badd, _, _ -> 
             let s1 = match to_string v1 with Vstring s -> s | _ -> failwith "Expected string" in
             let s2 = match to_string v2 with Vstring s -> s | _ -> failwith "Expected string" in
@@ -96,6 +131,8 @@ let rec expr ctx = function
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
+        | Bmod, Vnum n1, Vnum n2 -> Vnum (mod_float n1 n2)
+        | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
         | Blt, Vnum n1, Vnum n2 -> Vbool (n1 < n2)
         | Beq, Vnum n1, Vnum n2 -> Vbool (n1 == n2)
         | Bgt, Vnum n1, Vnum n2 -> Vbool (n1 > n2)
@@ -139,6 +176,14 @@ let rec expr ctx = function
             with 
             Return v -> v
         end
+  (* Matrix *)
+  (* expr list list *)
+  | Ematrix l ->
+    let matrix = Array.of_list (List.map (fun row ->
+      Array.of_list (List.map (expr ctx) row)
+    ) l) in
+    Vmatrix matrix
+  (* We do not support this yet *)
   | _ -> failwith "Unsupported expression"
 
 (* stmts is all the statements in the block. *)
@@ -184,6 +229,20 @@ and stmt ctx = function
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
+  | Ssetmatrix (e1, e2, e3, e4) ->
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    let v3 = expr ctx e3 in
+    let v4 = expr ctx e4 in
+    begin match v1, v2, v3 with 
+        | Vmatrix matrix, Vnum row, Vnum col -> 
+          if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
+            failwith "Index out of bounds"
+          else matrix.(int_of_float row).(int_of_float col) <- v4
+        | _ -> failwith "Invalid matrix access"
+   end
+   
+  (* For *)
   | Sfor ({id}, e1, e2, s, bl) ->
     let v1 = expr ctx e1 in
     begin match v1 with
