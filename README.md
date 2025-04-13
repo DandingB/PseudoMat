@@ -194,6 +194,55 @@ y = k[0]
 // y -> 1
 ```
 
+### Matricies
+Matrix declaration:
+```javascript
+// Valid matrix initialization
+Let m1 be [1, 2; 1, 3] as matrix
+
+Let m2 be [1, 2;
+           1, 3] as matrix
+
+Let m3 as matrix
+m3 = [1, 2;
+      1, 2}
+```
+Assign matrix entry:
+```javascript
+// Assign entry in matrix a value:
+m1[0,0] = 4
+m1[1,0] = 3
+```
+Linear algebra:
+```javascript
+// Adding two matricies:
+Let m4 be m1 + m2 as matrix
+m4 = m2 + m3
+```
+
+### Functions
+Declaring a function:
+```javascript
+// No parameters
+Function foo() {
+    Print("Hello from function foo!")
+}
+
+// Two parameters and return value
+Function bar(num1, num2) {
+    Return (num1 + num1) + num2
+}
+```
+
+Calling a function:
+```javascript
+// Calling with no parameters
+foo()
+
+// Calling with two parameters
+foo(2, 4)
+```
+
 ### Comments
 The syntax for `Comments`:
 ```javascript
