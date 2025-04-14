@@ -1,5 +1,5 @@
 # Function that adds two numbers
-Function Add(a as number, b as number) returns number {
+Function Add(a, b) {
     Let result be a + b as number
     Return result
 }

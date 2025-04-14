@@ -16,7 +16,7 @@ While (counter <= 5) {
 }
 
 # Function that checks if number is even and prints numbers up to it
-Function PrintIfEven(n as number) {
+Function PrintIfEven(n) {
     If (n % 2 == 0) {
         Print("Even number. Printing numbers up to " + n)
 

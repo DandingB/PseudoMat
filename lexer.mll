@@ -9,7 +9,7 @@
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let space = ' ' | '\t' | '\n'
+let space = ' ' | '\t' | '\n' | '\r'
 let data_type = "number" | "string" | "boolean" | "array" | "matrix"
 
 rule next_token = parse 
