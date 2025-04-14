@@ -141,6 +141,8 @@ let rec expr ctx = function
               failwith "Matrix dimensions do not match for multiplication"
             else
               (* Compute the resulting matrix *)
+              (* We do this by creating an array with the length corrosponding to tows of matrix 1.
+              And it will contain the cols of m2 number of arrays inside. *)
               let result = Array.init rows_m1 (fun i ->
                 Array.init cols_m2 (fun j ->
                   (* Compute the dot product of row i in m1 and column j in m2 *)
