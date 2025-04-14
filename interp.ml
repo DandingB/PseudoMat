@@ -130,6 +130,32 @@ let rec expr ctx = function
             Vstring(s1 ^ s2)
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
+        | Bmul, Vmatrix m1, Vmatrix m2 ->
+            (* Ensure the number of columns in m1 equals the number of rows in m2 *)
+            let rows_m1 = Array.length m1 in
+            let cols_m1 = Array.length m1.(0) in
+            let rows_m2 = Array.length m2 in
+            let cols_m2 = Array.length m2.(0) in
+            (* Columns in matrix one has to match rows i matrix two *)
+            if cols_m1 <> rows_m2 then
+              failwith "Matrix dimensions do not match for multiplication"
+            else
+              (* Compute the resulting matrix *)
+              let result = Array.init rows_m1 (fun i ->
+                Array.init cols_m2 (fun j ->
+                  (* Compute the dot product of row i in m1 and column j in m2 *)
+                  let dot_product = ref 0.0 in
+                  for k = 0 to cols_m1 - 1 do
+                    match m1.(i).(k), m2.(k).(j) with
+                    (* We store the result of the given field in the dot_product var.
+                    Hence the ! operator to dereference *)
+                    | Vnum n1, Vnum n2 -> dot_product := !dot_product +. (n1 *. n2)
+                    | _ -> failwith "Matrix multiplication only supports numeric values"
+                  done;
+                  Vnum !dot_product
+                )
+              ) in
+              Vmatrix result
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
         | Bmod, Vnum n1, Vnum n2 -> Vnum (mod_float n1 n2)
         | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
