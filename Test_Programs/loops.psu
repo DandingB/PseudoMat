@@ -1,5 +1,5 @@
 # For loop that prints numbers 1 to 5
-Print("\nFor loop from 1 to 5:")
+Print("\nFor loop from 1 to 5: ")
 
 Let i as number
 For(i = 1; i <= 5; i = i + 1) {
@@ -7,7 +7,7 @@ For(i = 1; i <= 5; i = i + 1) {
 }
 
 # While loop that counts up to 5
-Print("\nWhile loop counting to 5:")
+Print("\nWhile loop counting to 5: ")
 
 Let counter be 1 as number
 While (counter <= 5) {
@@ -18,14 +18,14 @@ While (counter <= 5) {
 # Function that checks if number is even and prints numbers up to it
 Function PrintIfEven(n) {
     If (n % 2 == 0) {
-        Print("Even number. Printing numbers up to " + n)
+        Print("\nEven number. Printing numbers up to " + n)
 
         Let i as number
         For(i = 1; i <= n; i = i + 1) {
             Print(i)
         }
     } Else {
-        Print("Not an even number.")
+        Print("\nNot an even number.")
     }
 }
 
