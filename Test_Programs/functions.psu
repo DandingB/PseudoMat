@@ -1,0 +1,10 @@
+# Function that adds two numbers
+Function Add(a, b) {
+    Let result be a + b as number
+    Return result
+}
+
+Let x be Add(5, 3) as number
+Print("\nCalling Add(5, 3): " + x)
+
+Print("\n-----------------------------------------------------------------------------\n\n")

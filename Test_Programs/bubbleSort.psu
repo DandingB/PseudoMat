@@ -1,0 +1,22 @@
+Let arr be [5, 2, 9, 1, 5, 6] as array
+Let n be 6 as number  # Length of the array
+
+Print("\nBefore: " + arr)
+
+Let i as number
+Let j as number
+
+For(i = 0; i < n; i = i + 1) {
+    For(j = 0; j < n - i - 1; j = j + 1) {
+        If (arr[j] > arr[j + 1]) {
+            # Swap arr[j] and arr[j + 1]
+            Let temp be arr[j] as number
+            arr[j] = arr[j + 1]
+            arr[j + 1] = temp
+        }
+    }
+}
+
+Print("\nAfter: " + arr)
+
+Print("\n-----------------------------------------------------------------------------\n\n")

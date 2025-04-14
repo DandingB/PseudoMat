@@ -1,0 +1,14 @@
+# Array Decleration
+Let arr1 be [1, 2, 3] as array
+Let arr2 as array
+Let arr3 be [2, 3, 4] as array
+
+Print("\nArr1 declared with initizalation: " + arr1)
+Print("\nArr2 declared without initizalation: " + arr2)
+
+arr1[0] = 5
+Print("\nArr1[0] assignment: " + arr1)
+
+Print("\nArr1 + Arr3: " + (arr1 + arr3))
+
+Print("\n-----------------------------------------------------------------------------\n\n")

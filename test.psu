@@ -7,8 +7,6 @@ Print("POW: " + i ^ j + "\n")
 Print("MOD: " + (4%3 != 0) + "\n")
 
 
-
-
 Let c as matrix
 c = [ 
     1, 2;
