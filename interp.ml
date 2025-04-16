@@ -111,7 +111,7 @@ let rec expr ctx = function
     let v2 = expr ctx e2 in
     begin match v1, v2 with
       | Varray arr, Vnum index -> 
-        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        if index < 0.0 || index >= float (Array.length arr) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (Array.length arr))
         else arr.(int_of_float index)
       | _ -> failwith "Invalid array access"
     end
@@ -304,7 +304,7 @@ and stmt ctx = function
     let v3 = expr ctx e3 in
     begin match v1, v2 with
       | Varray arr, Vnum index -> 
-        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        if index < 0.0 || index >= float (Array.length arr) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (Array.length arr)) 
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
@@ -316,7 +316,7 @@ and stmt ctx = function
     begin match v1, v2, v3 with 
         | Vmatrix matrix, Vnum row, Vnum col -> 
           if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
-            failwith "Index out of bounds"
+            failwith  "Index out of bounds"
           else matrix.(int_of_float row).(int_of_float col) <- v4
         | _ -> failwith "Invalid matrix access"
    end
