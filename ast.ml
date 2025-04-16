@@ -37,7 +37,7 @@
     | Sif of expr * stmt * stmt option  (* if (e1) {block1} else { block2 }, where block2 is optional *)
     | Selseif of expr * stmt * stmt option  (* elseif ( e1 ) { block1 } else { block2 }, where block2 is optional *)
     | Sreturn of expr
-    | Sassign of ident * expr
+    | Sassign of ident * expr * string
     | Sprint of expr
     | Sblock of stmt list
     | Sfor of ident * expr * expr * stmt * stmt (* for(ident = e1; expr; stmt) {block}  *) (* For(i = 1; i<10; i++) {block}*)

@@ -72,11 +72,17 @@ rule next_token = parse
     | "While" { WHILE }
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
-    | data_type { DATATYPE }
+    | data_type as dt { DATATYPE dt }
     | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
-    | _ as c { raise (Lexing_error ("Unexpected character: " ^ String.make 1 c)) }
+    | _ as c { 
+        let pos = Lexing.lexeme_start_p lexbuf in
+        let line = pos.Lexing.pos_lnum in
+        let col = pos.Lexing.pos_cnum - pos.Lexing.pos_bol + 1 in
+        raise (Lexing_error (Printf.sprintf "Unexpected character '%c' at line %d, column %d" c line col)
+        )
+}
 
 and string = parse 
     | '"' { let s = Buffer.contents string_buffer in 
@@ -88,6 +94,7 @@ and string = parse
                string lexbuf }
     | _ as c { Buffer.add_char string_buffer c ; 
                string lexbuf }
+    | eof { raise (Lexing_error "Unterminated string") }
 and comment = parse
     | "*)" { next_token lexbuf }
     | _ { comment lexbuf }
