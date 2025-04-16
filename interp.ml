@@ -111,14 +111,30 @@ let rec expr ctx = function
     let v2 = expr ctx e2 in
     begin match v1, v2 with
       | Varray arr, Vnum index -> 
-        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        if index < 0.0 || index >= float (Array.length arr) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (Array.length arr))
         else arr.(int_of_float index)
+      | Vstring s, Vnum index -> 
+        if index < 0.0 || index >= float (String.length s) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (String.length s))
+        else Vstring (String.make 1 (s.[int_of_float index]))
       | _ -> failwith "Invalid array access"
     end
+  | Egetmatrix (e1,e2,e3) ->
+    let v1 = expr ctx e1 in
+    let v2 = expr ctx e2 in
+    let v3 = expr ctx e3 in
+    begin match v1, v2, v3 with 
+        | Vmatrix matrix, Vnum row, Vnum col -> 
+          if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
+            failwith  "Index out of bounds"
+          else matrix.(int_of_float row).(int_of_float col)
+        | _ -> failwith "Invalid matrix access"
+   end
+  (* Length of array or string *)
   | Elength e1 -> 
     let v1 = expr ctx e1 in
     begin match v1 with
       | Varray arr -> Vnum (float (Array.length arr))
+      | Vstring s -> Vnum (float (String.length s))
       | _ -> failwith "Invalid length operation"
     end
   | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Bmod | Bpow  as op, e1, e2) ->
@@ -183,10 +199,15 @@ let rec expr ctx = function
         | Bmod, Vnum n1, Vnum n2 -> Vnum (mod_float n1 n2)
         | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
         | Blt, Vnum n1, Vnum n2 -> Vbool (n1 < n2)
+        | Blt, Vstring s1, Vstring s2 -> Vbool (s1 < s2)
         | Beq, Vnum n1, Vnum n2 -> Vbool (n1 == n2)
+        | Beq, Vstring s1, Vstring s2 -> Vbool (s1 = s2)
         | Bgt, Vnum n1, Vnum n2 -> Vbool (n1 > n2)
+        | Bgt, Vstring s1, Vstring s2 -> Vbool (s1 > s2)
         | Bge, Vnum n1, Vnum n2 -> Vbool (n1 >= n2)
+        | Bge, Vstring s1, Vstring s2 -> Vbool (s1 >= s2)
         | Ble, Vnum n1, Vnum n2 -> Vbool (n1 <= n2)
+        | Ble, Vstring s1, Vstring s2 -> Vbool (s1 <= s2)
         | Bneq, Vnum n1, Vnum n2 -> Vbool (n1 != n2)
         | _ -> failwith "Invalid binary operation"
       end
@@ -280,6 +301,9 @@ and stmt ctx = function
     (* We check if the matrix is empty or not. If it is empty we create a new one. *)
     | Vmatrix v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix v1)
     | Vnone, "array" -> Hashtbl.replace ctx id (Varray [||])
+    | Vnone, "string" -> Hashtbl.replace ctx id (Vstring "")
+    | Vnone, "number" -> Hashtbl.replace ctx id (Vnum 0.0)
+    | Vnone, "boolean" -> Hashtbl.replace ctx id (Vbool false)
     | _, _ -> failwith (Printf.sprintf "Variable '%s' cannot be initialized" id)
     end
   else 
@@ -301,7 +325,7 @@ and stmt ctx = function
     let v3 = expr ctx e3 in
     begin match v1, v2 with
       | Varray arr, Vnum index -> 
-        if index < 0.0 || index >= float (Array.length arr) then failwith "Index out of bounds"
+        if index < 0.0 || index >= float (Array.length arr) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (Array.length arr)) 
         else arr.(int_of_float index) <- v3
       | _ -> failwith "Invalid array access"
     end
@@ -313,7 +337,7 @@ and stmt ctx = function
     begin match v1, v2, v3 with 
         | Vmatrix matrix, Vnum row, Vnum col -> 
           if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
-            failwith "Index out of bounds"
+            failwith  "Index out of bounds"
           else matrix.(int_of_float row).(int_of_float col) <- v4
         | _ -> failwith "Invalid matrix access"
    end

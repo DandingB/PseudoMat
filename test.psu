@@ -1,7 +1,6 @@
 
+Let h be "hej" as string
+Let i be "hej" as string
 
-Print("hej")
+Print("LORT: " + (h >= i))
 
-
-
-?

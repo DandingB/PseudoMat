@@ -115,6 +115,7 @@ expr:
  | LSQ l = separated_list(COMMA, expr) RSQ { Earray l }
  | LSQ rows = matrix_rows RSQ { Ematrix rows }
  | e1 = expr LSQ e2 = expr RSQ { Eget (e1, e2) }
+ | e1 = expr LSQ e2 = expr COMMA e3 = expr RSQ { Egetmatrix (e1, e2, e3) }
  | e1 = expr DOT LENGTH { Elength e1 }
 //  Function call.
  | func_id = ident LP expr_list = separated_list(COMMA, expr) RP
