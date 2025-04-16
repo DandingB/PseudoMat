@@ -15,17 +15,11 @@ try
 with
 (* If lexer throughts error, then display line and column and character *)
 | Lexer.Lexing_error msg ->
-    let pos = Lexing.lexeme_start_p lexbuf in
-    Printf.eprintf "Lexing error at line %d, column %d: %s\n"
-      pos.Lexing.pos_lnum
-      (pos.Lexing.pos_cnum - pos.Lexing.pos_bol + 1)
+    Printf.eprintf "Lexing error: '%s'\n"
       msg
 (* If parser throws error then display line and column of the error *)
 | Parser.Error ->
-    let pos = Lexing.lexeme_start_p lexbuf in
-    Printf.eprintf "Syntax error at line %d, column %d\n"
-      pos.Lexing.pos_lnum
-      (pos.Lexing.pos_cnum - pos.Lexing.pos_bol + 1)
+    Printf.eprintf "Syntax error\n"
 (* If intepreter throws error then display the error message *)
 | Failure msg ->
     Printf.eprintf "Error: %s\n" msg

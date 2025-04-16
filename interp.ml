@@ -280,6 +280,9 @@ and stmt ctx = function
     (* We check if the matrix is empty or not. If it is empty we create a new one. *)
     | Vmatrix v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix v1)
     | Vnone, "array" -> Hashtbl.replace ctx id (Varray [||])
+    | Vnone, "string" -> Hashtbl.replace ctx id (Vstring "")
+    | Vnone, "number" -> Hashtbl.replace ctx id (Vnum 0.0)
+    | Vnone, "boolean" -> Hashtbl.replace ctx id (Vbool false)
     | _, _ -> failwith (Printf.sprintf "Variable '%s' cannot be initialized" id)
     end
   else 
