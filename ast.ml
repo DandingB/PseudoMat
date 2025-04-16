@@ -29,6 +29,7 @@
      | Ecall of ident * expr list (* f(e1,e2,...)*)
      | Earray of expr list (* [e1,e2,...] *)
      | Eget of expr * expr (* e1[e2] *)
+     | Egetmatrix of expr * expr * expr (* e1[e2,e3] *)
      | Ematrix of expr list list (* [[e1,e2,...],[e3,e4,...],...] *)
      | Elength of expr
 
