@@ -76,13 +76,7 @@ rule next_token = parse
     | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
-    | _ as c { 
-        let pos = Lexing.lexeme_start_p lexbuf in
-        let line = pos.Lexing.pos_lnum in
-        let col = pos.Lexing.pos_cnum - pos.Lexing.pos_bol + 1 in
-        raise (Lexing_error (Printf.sprintf "Unexpected character '%c' at line %d, column %d" c line col)
-        )
-}
+    | _ as c { raise (Lexing_error ("Unexpected character: " ^ String.make 1 c)) }
 
 and string = parse 
     | '"' { let s = Buffer.contents string_buffer in 

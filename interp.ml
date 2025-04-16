@@ -88,6 +88,16 @@ let rec print_value e =
   | Vstring n -> Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
 
+let get_datatype v = 
+  begin match v with 
+  | Vnone -> "None"
+  | Vbool _ -> "boolean"
+  | Vnum _ -> "number"
+  | Vstring _ -> "string"
+  | Varray _ -> "array"
+  | Vmatrix _ -> "matrix"
+  end
+
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
   | Ecst (Cnum n) -> Vnum n
@@ -194,7 +204,12 @@ let rec expr ctx = function
   | Eunop (Unot, e) ->
       Vbool (is_false (expr ctx e))
     (* When we have an identity we find it in the hastable and return it. *)
-  | Eident {id} -> Hashtbl.find ctx id
+  | Eident {id} ->
+    begin
+      try Hashtbl.find ctx id
+      with Not_found ->
+        failwith (Printf.sprintf "Variable '%s' not found in context" id)
+    end
   (* Functions *)
   | Ecall ({id=func_id}, el) ->
     (* We find the function with id f *)
@@ -227,7 +242,6 @@ let rec expr ctx = function
     ) l) in
     Vmatrix matrix
   (* We do not support this yet *)
-  | _ -> failwith "Unsupported expression"
 
 (* stmts is all the statements in the block. *)
 and stmt ctx = function
@@ -255,7 +269,6 @@ and stmt ctx = function
           (* Do nothing if not present *)
                 | None -> ())
   | Sassign ({id}, e1, dt) ->
-    Printf.printf "Assigning %s with type %s\n" id dt;
     (* If datatype is set we check it *)
     if(dt <> "") then
     let v1 = expr ctx e1 in
@@ -267,7 +280,7 @@ and stmt ctx = function
     (* We check if the matrix is empty or not. If it is empty we create a new one. *)
     | Vmatrix v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix v1)
     | Vnone, "array" -> Hashtbl.replace ctx id (Varray [||])
-    | _, _ -> failwith "Invalid initialization type"
+    | _, _ -> failwith (Printf.sprintf "Variable '%s' cannot be initialized" id)
     end
   else 
     (* If datatype is not set we make sure that we only assign to same type *)
@@ -279,7 +292,7 @@ and stmt ctx = function
       | Vstring v1, Vstring v2 -> Hashtbl.replace ctx id (Vstring v1)
       | Varray v1, Varray v2 -> Hashtbl.replace ctx id (Varray v1)
       | Vmatrix v1, Vmatrix v2 -> Hashtbl.replace ctx id (Vmatrix v1)
-      | _, _ -> failwith "Invalid assignment type"
+      | _ , _ -> failwith (Printf.sprintf "%s could not be asssigned to variable '%s' with type %s" (get_datatype v1) id (get_datatype v2) )
     end
 
   | Sset (e1, e2, e3) ->
@@ -350,9 +363,6 @@ and stmt ctx = function
   | Sfunc (id, args, bl) ->
     (* Add function to the hashtable *)
     Hashtbl.add functions id.id (args, bl)
-  (* Print *)
-  (* Last case fail *)
-  | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
     | s :: sl -> stmt ctx s; block ctx sl
