@@ -19,7 +19,8 @@
 %token NEWLINE
 %token SEMICOLON COMMA DOT 
 %token LESS GREATER LESSEQUALS GREATEREQUALS EQUALS NOTEQUALS AND OR
-%token LET AS BE ASSIGN DATATYPE
+%token LET AS BE ASSIGN 
+%token <string> DATATYPE
 %token FUNCTION RETURN
 %token <string> ID
 %start <Ast.file> main
@@ -60,9 +61,9 @@ stmt:
     { build_if_chain e1 b1 elseifs elseopt }
   //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
   // This will match: Let id as type be value
-  | LET e1 = ident BE e2 = expr AS DATATYPE { Sassign (e1, e2) } 
-  | LET e1 = ident AS DATATYPE { Sassign (e1, Ecst(Cnone) ) } 
-  | LET e1 = ident AS d = DIMENSION DATATYPE
+  | LET e1 = ident BE e2 = expr AS dt = DATATYPE { Sassign (e1, e2, dt) } 
+  | LET e1 = ident AS dt = DATATYPE { Sassign (e1, Ecst(Cnone), dt) } 
+  | LET e1 = ident AS d = DIMENSION dt = DATATYPE
     {
       let (w, h) = d in
       let rows = int_of_float h in
@@ -70,10 +71,10 @@ stmt:
       let matrix = Ematrix (
         List.init rows (fun _ -> List.init cols (fun _ -> Ecst (Cnum 0.)))
       ) in
-      Sassign (e1, matrix)
+      Sassign (e1, matrix, dt)
     } 
   //  Assign new value to variabble. This will match: id = value
-  | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2) }
+  | e1 = ident ASSIGN e2 = expr { Sassign (e1, e2, "") }
   | e1 = expr LSQ e2 = expr COMMA e3 = expr RSQ ASSIGN e4 = expr { Ssetmatrix (e1, e2, e3, e4) } (* Assign value to matrix. *)
   //  Assign value to array. 
   | e1 = expr LSQ e2 = expr RSQ ASSIGN e3 = expr { Sset (e1, e2, e3) }

@@ -72,7 +72,7 @@ rule next_token = parse
     | "While" { WHILE }
     (* Data types.  *)
     (* TODO: NOT IMPLEMENTED YET *)
-    | data_type { DATATYPE }
+    | data_type as dt { DATATYPE dt }
     | letter (letter | digit | '_')* as id { ID id }
     | '"' { STRING(string lexbuf) }
     | eof { EOF }
@@ -88,6 +88,7 @@ and string = parse
                string lexbuf }
     | _ as c { Buffer.add_char string_buffer c ; 
                string lexbuf }
+    | eof { raise (Lexing_error "Unterminated string") }
 and comment = parse
     | "*)" { next_token lexbuf }
     | _ { comment lexbuf }

@@ -27,6 +27,17 @@ exception Return of value
 let has_decimal_part x =
   x <> floor x  
 
+let is_false v = 
+  if v = Vnone then true 
+  else if v = Vbool false then true 
+  else if v = Vnum 0. then true 
+  else if v = Vstring "" then true 
+  else if v = Varray [||] then true 
+  else if v = Vmatrix [||] then true 
+  else false
+
+let is_true v = not (is_false v)
+
 let rec to_string e =
   match e with
   | Vnone -> Vstring "None"
@@ -77,6 +88,16 @@ let rec print_value e =
   | Vstring n -> Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
 
+let get_datatype v = 
+  begin match v with 
+  | Vnone -> "None"
+  | Vbool _ -> "boolean"
+  | Vnum _ -> "number"
+  | Vstring _ -> "string"
+  | Varray _ -> "array"
+  | Vmatrix _ -> "matrix"
+  end
+
 let rec expr ctx = function 
   | Ecst (Cnone) -> Vnone
   | Ecst (Cnum n) -> Vnum n
@@ -100,7 +121,7 @@ let rec expr ctx = function
       | Varray arr -> Vnum (float (Array.length arr))
       | _ -> failwith "Invalid length operation"
     end
-  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Band | Bor | Bmod | Bpow  as op, e1, e2) ->
+  | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Bmod | Bpow  as op, e1, e2) ->
       let v1 = expr ctx e1 in
       let v2 = expr ctx e2 in
       begin match op, v1, v2 with
@@ -167,19 +188,28 @@ let rec expr ctx = function
         | Bge, Vnum n1, Vnum n2 -> Vbool (n1 >= n2)
         | Ble, Vnum n1, Vnum n2 -> Vbool (n1 <= n2)
         | Bneq, Vnum n1, Vnum n2 -> Vbool (n1 != n2)
-        | Band, Vbool n1, Vbool n2 -> Vbool (n1 && n2)
-        | Bor, Vbool n1, Vbool n2 -> Vbool (n1 || n2)
         | _ -> failwith "Invalid binary operation"
       end
-  | Eunop (Uneg | Unot as op, e) ->
+  (* Binary operations for And and Or *)
+  | Ebinop (Band, e1, e2) ->
+    Vbool (is_true (expr ctx e1) && is_true (expr ctx e2))
+  | Ebinop (Bor, e1, e2) ->
+      Vbool (is_true (expr ctx e1) || is_true (expr ctx e2))
+  | Eunop (Uneg, e) ->
     let v1 = expr ctx e in
-    begin match op, v1 with
-    | Uneg, Vnum n2 -> Vnum( -.n2 )
-    | Unot, Vbool n2 -> Vbool (not n2)
-    | _ -> failwith "Unsupported Expression"
+    begin match v1 with
+    | Vnum n2 -> Vnum( -.n2)
+    | _ -> failwith "Invalid unary operation"
     end
+  | Eunop (Unot, e) ->
+      Vbool (is_false (expr ctx e))
     (* When we have an identity we find it in the hastable and return it. *)
-  | Eident {id} -> Hashtbl.find ctx id
+  | Eident {id} ->
+    begin
+      try Hashtbl.find ctx id
+      with Not_found ->
+        failwith (Printf.sprintf "Variable '%s' not found in context" id)
+    end
   (* Functions *)
   | Ecall ({id=func_id}, el) ->
     (* We find the function with id f *)
@@ -212,7 +242,6 @@ let rec expr ctx = function
     ) l) in
     Vmatrix matrix
   (* We do not support this yet *)
-  | _ -> failwith "Unsupported expression"
 
 (* stmts is all the statements in the block. *)
 and stmt ctx = function
@@ -222,31 +251,50 @@ and stmt ctx = function
   | Seval e ->
     ignore (expr ctx e)
   | Sif (e, bl1, bl2) -> 
-    let e1 = expr ctx e in
-    begin match e1 with
-      | Vbool e1 -> 
-          if e1 then stmt ctx bl1
-          (* We check if else block is present *)
-          else (match bl2 with
+    if is_true(expr ctx e) 
+    then stmt ctx bl1
+    (* We check if else block is present *)
+    else (match bl2 with
           (* Exectue else if present *)
                 | Some b2 -> stmt ctx b2  
           (* Do nothing if not present *)
-                | None -> ())  
-      | _ -> failwith "Not boolean"
-    end
+                | None -> ())
   | Selseif (e, bl1, bl2) ->
-    let e1 = expr ctx e in
-    begin match e1 with
-      | Vbool e1 -> 
-        (* Same logic as for if *)
-          if e1 then stmt ctx bl1
-          else (match bl2 with
+    if is_true(expr ctx e) 
+    then stmt ctx bl1
+    (* We check if else block is present *)
+    else (match bl2 with
+          (* Exectue else if present *)
                 | Some b2 -> stmt ctx b2  
-                | None -> ())  
-      | _ -> failwith "Not boolean"
+          (* Do nothing if not present *)
+                | None -> ())
+  | Sassign ({id}, e1, dt) ->
+    (* If datatype is set we check it *)
+    if(dt <> "") then
+    let v1 = expr ctx e1 in
+    begin match v1, dt with
+    | Vnum v1, "number" -> Hashtbl.replace ctx id (Vnum v1) 
+    | Vbool v1, "boolean" -> Hashtbl.replace ctx id (Vbool v1)
+    | Vstring v1, "string" -> Hashtbl.replace ctx id (Vstring v1)
+    | Varray v1, "array" -> Hashtbl.replace ctx id (Varray v1) 
+    (* We check if the matrix is empty or not. If it is empty we create a new one. *)
+    | Vmatrix v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix v1)
+    | Vnone, "array" -> Hashtbl.replace ctx id (Varray [||])
+    | _, _ -> failwith (Printf.sprintf "Variable '%s' cannot be initialized" id)
     end
-  | Sassign ({id}, e1) ->
-    Hashtbl.replace ctx id (expr ctx e1)
+  else 
+    (* If datatype is not set we make sure that we only assign to same type *)
+    let v1 = expr ctx e1 in
+    let v2 = Hashtbl.find ctx id in
+    begin match v1, v2 with
+      | Vnum v1, Vnum v2 -> Hashtbl.replace ctx id (Vnum v1)
+      | Vbool v1, Vbool v2 -> Hashtbl.replace ctx id (Vbool v1)
+      | Vstring v1, Vstring v2 -> Hashtbl.replace ctx id (Vstring v1)
+      | Varray v1, Varray v2 -> Hashtbl.replace ctx id (Varray v1)
+      | Vmatrix v1, Vmatrix v2 -> Hashtbl.replace ctx id (Vmatrix v1)
+      | _ , _ -> failwith (Printf.sprintf "%s could not be asssigned to variable '%s' with type %s" (get_datatype v1) id (get_datatype v2) )
+    end
+
   | Sset (e1, e2, e3) ->
     let v1 = expr ctx e1 in
     let v2 = expr ctx e2 in
@@ -315,9 +363,6 @@ and stmt ctx = function
   | Sfunc (id, args, bl) ->
     (* Add function to the hashtable *)
     Hashtbl.add functions id.id (args, bl)
-  (* Print *)
-  (* Last case fail *)
-  | _ -> failwith "Unsupported statement"
 and block ctx = function
     | [] -> ()
     | s :: sl -> stmt ctx s; block ctx sl
