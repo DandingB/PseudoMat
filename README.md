@@ -9,7 +9,6 @@ The following will provide documentation on how to use **PseudoMat** with given 
 
 ---
 ### Print
-<!-- TODO: ADD example for concat -->
 The syntax for printing:
 ```javascript
 // Simple string
@@ -17,6 +16,9 @@ Print("Hello World!")
 
 // Escape characters
 Print("Hello \" Joe \" ")
+
+// Concat string
+Print("Hello" + " World!")
 ```
 
 ---
@@ -71,19 +73,29 @@ The syntax for boolean logic:
 // -> False
 ```
 ```javascript
+// Less than or equals to
+3 <= 3
+// -> True
+```
+```javascript
 // Not equals to
 3 != 4
 // -> True
 ```
 ```javascript
-// Not equals to
+// Logical Or
 True Or False 
 // -> True
 ```
-<!-- TODO: Update this to remove prenthesis -->
+```javascript
+// Logical And
+True And False
+// -> False
+
+```
 ```javascript
 // Will print True
-If((3 < 4) Or (6 < 7)){
+If(3 < 4 Or 6 < 7){
     Print("True")
 }
 ```
@@ -174,7 +186,6 @@ While (k < 10) {
 }
 ```
 
-<!-- TODO: Add element access example -->
 ### Arrays
 Arrays in **PseudoMat** are 0 indexed.
 The syntax for `Arrays`:
@@ -193,6 +204,13 @@ Let y be k[2] as number
 y = k[0]
 // y -> 1
 ```
+```javascript
+// Change element in array
+Let k be [1, 2, 3] as array
+
+k[0] = 5
+// k -> [5, 2, 3]
+```
 
 ### Matricies
 Matrix declaration:
@@ -205,7 +223,7 @@ Let m2 be [1, 2;
 
 Let m3 as matrix
 m3 = [1, 2;
-      1, 2}
+      1, 2]
 ```
 Assign matrix entry:
 ```javascript
