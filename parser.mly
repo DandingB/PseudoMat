@@ -35,14 +35,14 @@
 
 
 main:
- | NEWLINE? e = nonempty_list(block) NEWLINE? EOF { Sblock e }
+ | e = nonempty_list(block) EOF { Sblock e }
 
 func: 
  | FUNCTION id = ident LP args = separated_list(COMMA, ident) RP b = block { id, args, b }
 
 block:
- | NEWLINE? e1 = stmt NEWLINE? { e1 }
- | NEWLINE? LC NEWLINE? e = nonempty_list(stmt) NEWLINE? RC NEWLINE? { Sblock e }
+ | e1 = stmt { e1 }
+ | LC e = nonempty_list(stmt) RC { Sblock e }
 
 // Else If blocks. Retuns a list of tuples consiting of  the expression and the block: [(expr1,block1), (expr2,block2),...].
 elseif_blocks:

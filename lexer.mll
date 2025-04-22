@@ -9,12 +9,12 @@
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let space = ' ' | '\t' | '\n' | '\r'
+let space = ' ' | '\t' | '\r'
 let data_type = "number" | "string" | "boolean" | "array" | "matrix"
 
 rule next_token = parse 
     | space+ { next_token lexbuf }
-    | '\n' { NEWLINE }
+    | '\n' { Lexing.new_line lexbuf; next_token lexbuf }
     | '+' { ADD }
     | '-' { SUB }
     | '*' {MUL}

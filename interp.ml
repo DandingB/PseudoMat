@@ -116,7 +116,7 @@ let rec expr ctx = function
       | Vstring s, Vnum index -> 
         if index < 0.0 || index >= float (String.length s) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (String.length s))
         else Vstring (String.make 1 (s.[int_of_float index]))
-      | _ -> failwith "Invalid array access"
+      | _ -> failwith "Wrong expression types"
     end
   | Egetmatrix (e1,e2,e3) ->
     let v1 = expr ctx e1 in
@@ -125,9 +125,9 @@ let rec expr ctx = function
     begin match v1, v2, v3 with 
         | Vmatrix matrix, Vnum row, Vnum col -> 
           if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
-            failwith  "Index out of bounds"
+            failwith (Printf.sprintf "Index [%d, %d] out of bounds: dimensions are %dx%d " (int_of_float row) (int_of_float col) (Array.length matrix) (Array.length matrix.(0)))
           else matrix.(int_of_float row).(int_of_float col)
-        | _ -> failwith "Invalid matrix access"
+        | _ -> failwith "Wrong expression types"
    end
   (* Length of array or string *)
   | Elength e1 -> 
@@ -135,7 +135,7 @@ let rec expr ctx = function
     begin match v1 with
       | Varray arr -> Vnum (float (Array.length arr))
       | Vstring s -> Vnum (float (String.length s))
-      | _ -> failwith "Invalid length operation"
+      | _ -> failwith "The length operator can only be used on Arrays and Strings."
     end
   | Ebinop (Badd | Bsub | Bmul | Bdiv | Blt | Beq | Bgt | Bge | Ble | Bneq | Bmod | Bpow  as op, e1, e2) ->
       let v1 = expr ctx e1 in
@@ -209,7 +209,7 @@ let rec expr ctx = function
         | Ble, Vnum n1, Vnum n2 -> Vbool (n1 <= n2)
         | Ble, Vstring s1, Vstring s2 -> Vbool (s1 <= s2)
         | Bneq, Vnum n1, Vnum n2 -> Vbool (n1 != n2)
-        | _ -> failwith "Invalid binary operation"
+        | _ as op, e1, e2 -> failwith (Printf.sprintf "Invalid binary operation. Operand types are '%s' and '%s'" (get_datatype e1) (get_datatype e2))
       end
   (* Binary operations for And and Or *)
   | Ebinop (Band, e1, e2) ->
@@ -220,7 +220,7 @@ let rec expr ctx = function
     let v1 = expr ctx e in
     begin match v1 with
     | Vnum n2 -> Vnum( -.n2)
-    | _ -> failwith "Invalid unary operation"
+    | _ -> failwith (Printf.sprintf "Invalid unary operation. Operand type are '%s'" (get_datatype v1))
     end
   | Eunop (Unot, e) ->
       Vbool (is_false (expr ctx e))
@@ -234,6 +234,7 @@ let rec expr ctx = function
   (* Functions *)
   | Ecall ({id=func_id}, el) ->
     (* We find the function with id f *)
+    begin try
         let (params, body) = Hashtbl.find functions func_id in
         (* We create a new context specific for the function *)
         let new_ctx = Hashtbl.create 17 in
@@ -255,6 +256,9 @@ let rec expr ctx = function
             with 
             Return v -> v
         end
+    with Not_found ->
+      failwith (Printf.sprintf "Function '%s' not found in context" func_id)
+    end
   (* Matrix *)
   (* expr list list *)
   | Ematrix l ->
@@ -327,7 +331,7 @@ and stmt ctx = function
       | Varray arr, Vnum index -> 
         if index < 0.0 || index >= float (Array.length arr) then failwith (Printf.sprintf "Index '%d' out of bounds: length is %d " (int_of_float index) (Array.length arr)) 
         else arr.(int_of_float index) <- v3
-      | _ -> failwith "Invalid array access"
+      | _ -> failwith "Wrong expression types"
     end
   | Ssetmatrix (e1, e2, e3, e4) ->
     let v1 = expr ctx e1 in
@@ -337,9 +341,9 @@ and stmt ctx = function
     begin match v1, v2, v3 with 
         | Vmatrix matrix, Vnum row, Vnum col -> 
           if row < 0.0 || row >= float (Array.length matrix) || col < 0.0 || col >= float (Array.length matrix.(0)) then
-            failwith  "Index out of bounds"
+            failwith  (Printf.sprintf "Index [%d, %d] out of bounds: dimensions are %dx%d " (int_of_float row) (int_of_float col) (Array.length matrix) (Array.length matrix.(0)))
           else matrix.(int_of_float row).(int_of_float col) <- v4
-        | _ -> failwith "Invalid matrix access"
+        | _ -> failwith "Wrong expression types"
    end
    
   (* For *)
