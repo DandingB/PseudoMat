@@ -1,4 +1,6 @@
-Function testFunc(a, b) 
 
+Let h be "hej" as string
+Let i be "hej" as string
 
-Print(testFunc(2,3))
+Print("LORT: " + (h >= i))
+

@@ -234,32 +234,27 @@ let rec expr ctx = function
   (* Functions *)
   | Ecall ({id=func_id}, el) ->
     (* We find the function with id f *)
-    begin try
-      let (params, body) = Hashtbl.find functions func_id in
+        let (params, body) = Hashtbl.find functions func_id in
+        (* We create a new context specific for the function *)
+        let new_ctx = Hashtbl.create 17 in
+        (* We iterate over the function formal params and assign
+         the values provided to the call to each of these vraiables.
 
-      (* We create a new context specific for the function *)
-      let new_ctx = Hashtbl.create 17 in
-      (* We iterate over the function formal params and assign
-        the values provided to the call to each of these vraiables.
+         This means we assign the provided values from the el (expr list) 
+         to the vars in the function:
+         Function f(var1, var2){}
+         f(el1, el2)
 
-        This means we assign the provided values from the el (expr list) 
-        to the vars in the function:
-        Function f(var1, var2){}
-        f(el1, el2)
-
-      *)
-      List.iter2 (fun {id} e -> Hashtbl.add new_ctx id (expr ctx e)) params el;
-      (* We then try to evaluate the body of the function *)
-      (* Retun non if we fail. Else, return value *)
-      begin try
-        stmt new_ctx body;
-        Vnone
-      with 
-        Return v -> v   
-      end
-    with Not_found ->
-      failwith (Printf.sprintf "Function '%s' not found in context" func_id)
-    end
+         *)
+        List.iter2 (fun {id} e -> Hashtbl.add new_ctx id (expr ctx e)) params el;
+        (* We then try to evaluate the body of the function *)
+        (* Retun non if we fail. Else, return value *)
+        begin try
+                stmt new_ctx body;
+                Vnone
+            with 
+            Return v -> v
+        end
   (* Matrix *)
   (* expr list list *)
   | Ematrix l ->
