@@ -209,7 +209,7 @@ let rec expr ctx = function
         | Ble, Vnum n1, Vnum n2 -> Vbool (n1 <= n2)
         | Ble, Vstring s1, Vstring s2 -> Vbool (s1 <= s2)
         | Bneq, Vnum n1, Vnum n2 -> Vbool (n1 != n2)
-        | _ as op, e1, e2 -> failwith (Printf.sprintf "Invalid binary operation. Operand types are '%s' and '%s'" (get_datatype e1) (get_datatype e2))
+        | _ , e1, e2 -> failwith (Printf.sprintf "Invalid binary operation. Operand types are '%s' and '%s'" (get_datatype e1) (get_datatype e2))
       end
   (* Binary operations for And and Or *)
   | Ebinop (Band, e1, e2) ->
