@@ -19,7 +19,7 @@ with
       msg
 (* If parser throws error then display line and column of the error *)
 | Parser.Error ->
-    Printf.eprintf "Syntax error\n"
+    Printf.eprintf "Syntax error at line %d\n" lexbuf.lex_curr_p.pos_lnum
 (* If intepreter throws error then display the error message *)
 | Failure msg ->
-    Printf.eprintf "Error: %s\n" msg
+    Printf.eprintf "Runtime error: %s\n" msg
