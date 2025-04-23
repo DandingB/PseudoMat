@@ -21,6 +21,32 @@ Print("Hello \" Joe \" ")
 Print("Hello" + " World!")
 ```
 
+### Simple string operation:
+```javascript
+// String comparison
+Let a be "Hello" as string
+Let b be "Hello" as string
+
+a == b
+// -> true
+```
+```javascript
+// String comparison
+Let a be "Hello World" as string
+Let b be "Hello" as string
+
+a > b
+// -> true
+```
+```javascript
+// String comparison
+Let a be "Hello World" as string
+
+Print(a[0])
+// -> H
+```
+
+
 ---
 ### Simple math operations
 The syntax for simple math operations:
