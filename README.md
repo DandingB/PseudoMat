@@ -294,3 +294,153 @@ The syntax for `Comments`:
 (* This is a multiline 
 comment*)
 ```
+
+### arrays.psu
+Test program for  `Array Declaration`:
+```javascript
+Let arr1 be [1, 2, 3] as array
+Let arr2 as array
+Let arr3 be [2, 3, 4] as array
+
+Print("\nArr1 declared with initizalation: " + arr1)
+Print("\nArr2 declared without initizalation: " + arr2)
+
+arr1[0] = 5
+Print("\nArr1[0] assignment: " + arr1)
+
+Print("\nArr1 + Arr3: " + (arr1 + arr3))
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+```
+
+### bubblesort.psu
+Test program for  `Bubblesort`:
+```javascript
+Let arr be [5, 2, 9, 1, 5, 6] as array
+Let n be 6 as number  # Length of the array
+
+Print("\nBefore: " + arr)
+
+Let i as number
+Let j as number
+
+For(i = 0; i < n; i = i + 1) {
+    For(j = 0; j < n - i - 1; j = j + 1) {
+        If (arr[j] > arr[j + 1]) {
+            # Swap arr[j] and arr[j + 1]
+            Let temp be arr[j] as number
+            arr[j] = arr[j + 1]
+            arr[j + 1] = temp
+        }
+    }
+}
+
+Print("\nAfter: " + arr)
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+
+```
+
+### functions.psu
+Test program for  `Functions`:
+```javascript
+# Function that adds two numbers
+Function Add(a, b) {
+    Let result be a + b as number
+    Return result
+}
+
+Let x be Add(5, 3) as number
+Print("\nCalling Add(5, 3): " + x)
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+
+```
+
+### if-statements.psu
+Test program for  `If_statements`:
+```javascript
+# Conditional logic
+Let num be 7 as number
+Print("\nDeclared num to be 7 as number\n")
+
+If (num < 5) {
+    Print("\nnum is less than 5")
+} Else If (num == 5) {
+    Print("\nnum is equal to 5")
+} Else {
+    Print("\nnum is greater than 5")
+}
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+
+```
+
+### loops.psu
+Test program for  `Loops`:
+```javascript
+# For loop that prints numbers 1 to 5
+Print("\nFor loop from 1 to 5: ")
+
+Let i as number
+For(i = 1; i <= 5; i = i + 1) {
+    Print(i)
+}
+
+# While loop that counts up to 5
+Print("\nWhile loop counting to 5: ")
+
+Let counter be 1 as number
+While (counter <= 5) {
+    Print(counter)
+    counter = counter + 1
+}
+
+# Function that checks if number is even and prints numbers up to it
+Function PrintIfEven(n) {
+    If (n % 2 == 0) {
+        Print("\nEven number. Printing numbers up to " + n)
+
+        Let i as number
+        For(i = 1; i <= n; i = i + 1) {
+            Print(i)
+        }
+    } Else {
+        Print("\nNot an even number.")
+    }
+}
+
+Let testNum be 6 as number
+PrintIfEven(testNum)
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+
+```
+
+### matrices.psu
+Test program for  `Matrix operations`:
+```javascript
+Let c as 2x2 matrix
+c = [ 
+    1, 2;
+    1, 2
+    ]
+
+Let b be [ 
+    1, 2;
+    1, 2
+    ] as matrix
+
+Print("\nMatrix decleration:\nC =\n" + c + ",\n\nb =\n" + b + "\n\n")
+
+Print("\nMatrix addition C + B =\n" + (c + b) + "\n\n")
+
+c[0, 1] = 3
+
+Print("\nC[0, 1] = 3\n\n" + "C =\n" + c + "\n")
+
+Print("\nMatrix multiplication C * B =\n" + (c * b))
+
+Print("\n-----------------------------------------------------------------------------\n\n")
+
+```
