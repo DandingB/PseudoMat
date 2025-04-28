@@ -60,7 +60,15 @@ stmt:
     { build_if_chain e1 b1 elseifs elseopt }
   //  First expression is the ID expression returning Eident. Second is the value of the ID expression.
   // This will match: Let id as type be value
-  | LET e1 = ident BE e2 = expr AS dt = DATATYPE { Sassign (e1, e2, dt) } 
+  | LET e1 = ident BE e2 = expr AS dt = DATATYPE { 
+        (* If the datatype is matrix and the expression is array, we assign as matrix type *)
+        (* Else we just return the expression as is*)
+        let value = match dt, e2 with
+          | "matrix", Earray l -> Ematrix [l]
+          | _, _ -> e2
+        in
+        Sassign (e1, value, dt)
+      }
   | LET e1 = ident AS dt = DATATYPE { Sassign (e1, Ecst(Cnone), dt) } 
   | LET e1 = ident AS d = DIMENSION dt = DATATYPE
     {

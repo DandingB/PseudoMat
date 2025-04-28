@@ -264,6 +264,50 @@ Let m4 be m1 + m2 as matrix
 m4 = m2 + m3
 ```
 
+### Vectors
+Important:
+- When multiplying vectors, if one is a column and the other is a row, the result is a scalar (dot product).
+- When both are columns (or rows), and we transpose one, the result can be a full matrix (outer product).
+- We **transpose the right-hand vector** (the second matrix) to ensure compatibility for multiplication.
+This behavior depends on the orientation (row or column) of the vectors before multiplication.
+
+Vector declaration:
+```javascript
+// Valid vector initialization
+Let v1 be [1, 1] as matrix
+
+Let v2 be [1; 1] as matrix
+
+```
+
+Vector multiplication: 
+```javascript
+v1 * v1 
+// -> [[2]]
+
+v2 * v2
+// -> [[1,1], [1,1]]
+
+// Vector matrix multiplication
+Let m1 be [
+    1, 1;
+    2 ,2
+] as matrix
+
+v1 * m1
+// -> [[3, 3]]
+
+m1 * v1
+// -> [[2], [4]]
+```
+
+Vector addition:
+```javascript
+v1 + v1
+// -> [[2,2]]
+```
+
+
 ### Functions
 Declaring a function:
 ```javascript
