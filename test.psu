@@ -1,18 +1,32 @@
 
-Let h be "hej" as string
-Let i be "hej" as string
+# Vector
+Let vector1 be [
+   1,
+    1
+] as matrix
 
-Print("Nice: " + (h >= i) + "\n")
+Let vector2 be [
+    1;
+    1
+] as matrix
 
-Let arr be [5, 2, 9, 1, 5, 6] as array
+# Matrix
+Let matrix1 be [
+    1, 1;
+    2 ,2
+] as matrix
 
-Print(arr[2] + "\n")
+Print("vector1 = " + vector1 + "\n")
+Print("matrix1 = " + matrix1 + "\n")
 
-Let b be [ 
-    1, 2, 5;
-    1, 2, 3
-    ] as matrix
+# Vector matrix multiplication
+Print("\nVector matrix multiplication vector1 * matrix1 = " + (vector1 * matrix1) + "\n")
 
-b[0, 2] = 2
+Print("Matrix vector multiplication matrix1 * vector1 = " + (matrix1 * vector1) + "\n")
 
--23
+Print("\nVector vector multiplication vector1 * vector1 = " + (vector1 * vector1) + "\n")
+Print("\nVector vector multiplication vector2 * vector2 = " + (vector2 * vector2) + "\n")
+
+Print("\nVector vector addition vector1 + vector1 = " + (vector1 + vector1) + "\n")
+
+Print("\n-----------------------------------------------------------------------------\n\n")

@@ -145,22 +145,55 @@ let rec expr ctx = function
         | Badd, Vstring n1, Vstring n2  -> Vstring (n1 ^ n2)
         | Badd, Varray n1, Varray n2 -> Varray (Array.append n1 n2)
         | Badd, Vmatrix m1, Vmatrix m2 ->
-            (* We make sure that the matrix dimensions are the same *)
-            if Array.length m1 <> Array.length m2 || Array.length m1.(0) <> Array.length m2.(0) then
-              failwith "Matrix dimensions do not match for addition"
-            else
-              (* We create a new matrix with the same dimensions.
-              We do this by looping over the first matrix, then the second and adding each elment in the rows.
-              We end out returning the new matrix.
+          (* Helper function to transpose a matrix *)
+          let transpose matrix =
+            Array.init (Array.length matrix.(0)) (fun i ->
+              Array.map (fun row -> row.(i)) matrix
+            )
+          in
+      
+          (* Get dimensions of both matrices *)
+          let m1_rows = Array.length m1 in
+          let m1_cols = Array.length m1.(0) in
+          let m2_rows = Array.length m2 in
+          let m2_cols = Array.length m2.(0) in
+      
+          (* Check if matrices can be transformed to match dimensions *)
+          let (m1_final, m2_final) =
+            if m1_rows = m2_rows && m1_cols = m2_cols then
+              (* Standard case: dimensions already match *)
+              (m1, m2)
+            else if (m1_rows = 1 || m1_cols = 1) && (m2_rows = 1 || m2_cols = 1) then
+              (* 
+              We check if the m1 dimensions match the transposed m2 dimensions,
+              and we make sure that both m1 and m2 are vectors (at least one row or column is 1).
               *)
-              let result = Array.mapi (fun i row1 ->
-                Array.mapi (fun j val1 ->
-                  match val1, m2.(i).(j) with
-                  | Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
-                  | _ -> failwith "Matrix addition only supports numeric values"
-                ) row1
-              ) m1 in
-              Vmatrix result
+              if m1_rows = m2_cols && m1_cols = m2_rows then
+                (* Transform m2 to match m1's dimensions *)
+                (m1, transpose m2)
+              else
+                failwith "Vector dimensions do not match for addition"
+            else
+              failwith "Matrix dimensions do not match for addition"
+          in
+      
+          (* We make sure that the final matrix dimensions are the same *)
+          if Array.length m1_final <> Array.length m2_final ||
+             Array.length m1_final.(0) <> Array.length m2_final.(0) then
+            failwith "Matrix dimensions do not match for addition"
+          else
+            (* We create a new matrix with the same dimensions.
+               We do this by looping over the first matrix, then the second and adding each element in the rows.
+               We end up returning the new matrix.
+            *)
+            let result = Array.mapi (fun i row1 ->
+              Array.mapi (fun j val1 ->
+                match val1, m2_final.(i).(j) with
+                | Vnum n1, Vnum n2 -> Vnum (n1 +. n2)
+                | _ -> failwith "Matrix addition only supports numeric values"
+              ) row1
+            ) m1_final in
+            Vmatrix result
         | Badd, _, _ -> 
             let s1 = match to_string v1 with Vstring s -> s | _ -> failwith "Expected string" in
             let s2 = match to_string v2 with Vstring s -> s | _ -> failwith "Expected string" in
@@ -168,33 +201,68 @@ let rec expr ctx = function
         | Bsub, Vnum n1, Vnum n2 -> Vnum (n1 -. n2)
         | Bmul, Vnum n1, Vnum n2 -> Vnum (n1 *. n2)
         | Bmul, Vmatrix m1, Vmatrix m2 ->
-            (* Ensure the number of columns in m1 equals the number of rows in m2 *)
-            let rows_m1 = Array.length m1 in
-            let cols_m1 = Array.length m1.(0) in
-            let rows_m2 = Array.length m2 in
-            let cols_m2 = Array.length m2.(0) in
-            (* Columns in matrix one has to match rows i matrix two *)
-            if cols_m1 <> rows_m2 then
-              failwith "Matrix dimensions do not match for multiplication"
+          (* Helper function to transpose a Vmatrix (vector in our case) *)
+          let transpose matrix =
+            Array.init (Array.length matrix.(0)) (fun i ->
+              Array.map (fun row -> row.(i)) matrix
+            )
+          in
+      
+          (* Get dimensions of both matrices *)
+          let m1_rows = Array.length m1 in
+          let m1_cols = Array.length m1.(0) in
+          let m2_rows = Array.length m2 in
+          let m2_cols = Array.length m2.(0) in
+      
+          (* Check if vectors can be transformed to match multiplication dimensions *)
+          let (m1_final, m2_final) =
+            if m1_cols = m2_rows then
+              (* Standard case, dimensions already match *)
+              (m1, m2)
+            else if m1_cols = m2_cols && (m2_rows = 1 || m2_cols = 1) then
+              (* m2 is a vector: transpose m2 to match m1's orientation *)
+              (m1, transpose m2)
+            else if m1_rows = m2_rows && (m1_rows = 1 || m1_cols = 1) then
+              (* m1 is a vector: transpose m1 to match m2's orientation *)
+              (transpose m1, m2)
             else
-              (* Compute the resulting matrix *)
-              (* We do this by creating an array with the length corrosponding to tows of matrix 1.
-              And it will contain the cols of m2 number of arrays inside. *)
-              let result = Array.init rows_m1 (fun i ->
-                Array.init cols_m2 (fun j ->
-                  (* Compute the dot product of row i in m1 and column j in m2 *)
-                  let dot_product = ref 0.0 in
-                  for k = 0 to cols_m1 - 1 do
-                    match m1.(i).(k), m2.(k).(j) with
-                    (* We store the result of the given field in the dot_product var.
-                    Hence the ! operator to dereference *)
-                    | Vnum n1, Vnum n2 -> dot_product := !dot_product +. (n1 *. n2)
-                    | _ -> failwith "Matrix multiplication only supports numeric values"
-                  done;
-                  Vnum !dot_product
-                )
-              ) in
-              Vmatrix result
+              (* Cannot fix dimensions even with transposing *)
+              failwith "Matrix dimensions cannot be made compatible for multiplication"
+          in
+      
+          (* Compute the resulting matrix *)
+          (* We do this by creating an array with the length corresponding to the rows of matrix 1.
+             It will contain arrays inside with a length corresponding to the columns of matrix 2. *)
+          let result_rows = Array.length m1_final in
+          let result_cols = Array.length m2_final.(0) in
+          let common_dim = Array.length m1_final.(0) in
+      
+          let result = Array.init result_rows (fun i ->
+            Array.init result_cols (fun j ->
+              (* Compute the dot product of row i in m1_final and column j in m2_final *)
+              let dot_product =
+                (* 
+                  We compute the dot product of row i from m1_final and column j from m2_final.
+                  We use Array.fold_left to loop over all common indices (k),
+                  starting with an accumulator value of 0.0, and for each step, we:
+                  - take the value from m1_final at (i, k) and the value from m2_final at (k, j)
+                  - multiply them together
+                  - add the product to the accumulator.
+
+                  Array.init common_dim Fun.id generates an array of indices [0; 1; ...; common_dim - 1].
+                *)
+                Array.fold_left (fun acc k ->
+                  match m1_final.(i).(k), m2_final.(k).(j) with
+                  (* We add the product of the two values to the accumulator acc *)
+                  | Vnum n1, Vnum n2 -> acc +. (n1 *. n2)
+                  | _ -> failwith "Matrix multiplication only supports numeric values"
+                ) 0.0 (Array.init common_dim Fun.id)
+              in
+              Vnum dot_product
+            )
+          ) in
+          Vmatrix result
+      
         | Bdiv, Vnum n1, Vnum n2 -> Vnum (n1 /. n2)
         | Bmod, Vnum n1, Vnum n2 -> Vnum (mod_float n1 n2)
         | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
@@ -266,7 +334,6 @@ let rec expr ctx = function
       Array.of_list (List.map (expr ctx) row)
     ) l) in
     Vmatrix matrix
-  (* We do not support this yet *)
 
 (* stmts is all the statements in the block. *)
 and stmt ctx = function
@@ -302,12 +369,14 @@ and stmt ctx = function
     | Vbool v1, "boolean" -> Hashtbl.replace ctx id (Vbool v1)
     | Vstring v1, "string" -> Hashtbl.replace ctx id (Vstring v1)
     | Varray v1, "array" -> Hashtbl.replace ctx id (Varray v1) 
-    (* We check if the matrix is empty or not. If it is empty we create a new one. *)
+    (* If we get a array which has the datatype matrix we return matrix *)
+    | Varray v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix [|v1|])
     | Vmatrix v1, "matrix" -> Hashtbl.replace ctx id (Vmatrix v1)
     | Vnone, "array" -> Hashtbl.replace ctx id (Varray [||])
     | Vnone, "string" -> Hashtbl.replace ctx id (Vstring "")
     | Vnone, "number" -> Hashtbl.replace ctx id (Vnum 0.0)
     | Vnone, "boolean" -> Hashtbl.replace ctx id (Vbool false)
+    | Vnone, "matrix" -> Hashtbl.replace ctx id (Vmatrix [||])
     | _, _ -> failwith (Printf.sprintf "Variable '%s' cannot be initialized" id)
     end
   else 
