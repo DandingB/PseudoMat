@@ -1,8 +1,5 @@
-(ocamllex
- (modules lexer))
-(menhir
- (modules parser))
 (executable
  (name Main)
+ (libraries Lib)
  (promote (until-clean))
  (flags ()))

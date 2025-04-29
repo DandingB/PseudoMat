@@ -1,3 +1,4 @@
+open Lib
 open Lexing
 open Parser
 open Lexer

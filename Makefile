@@ -1,6 +1,9 @@
 default:
 	dune build
 	dune exec ./Main.exe test.psu
+
+testall:
+	dune test
 	
 tests:
 ifeq ($(OS),Windows_NT)

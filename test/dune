@@ -1,0 +1,10 @@
+(test 
+ (name test) 
+ (libraries Lib)
+ (action
+  (diff test.expected.txt test.actual.txt)))
+
+(rule
+ (with-stdout-to
+  test.actual.txt
+  (run ./test.exe)))

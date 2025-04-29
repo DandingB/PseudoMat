@@ -1,5 +1,9 @@
+(* Compiling a library apperently finds warnings that was not there before idk.
+   I have not changed anything so, ignore specific warnings with this *)
+[@@@ocaml.warning "-9"]
+[@@@ocaml.warning "-27"]
+
 open Ast
-open Format
 
 type value =
   | Vnone
@@ -82,7 +86,7 @@ let rec to_string e =
       (* Concat all the elements *)
       Vstring ("[" ^ Array.fold_left (^) "" elements ^ "]")
 
-let rec print_value e = 
+let print_value e = 
   let v1 = to_string e in
   match v1 with
   | Vstring n -> Printf.printf "%s" n
