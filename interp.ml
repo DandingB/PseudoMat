@@ -21,11 +21,14 @@ exception Return of value
 (* This function is used to check if a number is an integer. *)
 (* It is used to format the output of numbers correctly. *)
 
-(* This function is used to check if a number has a decimal part. *)
-(* It is used to format the output of numbers correctly. *)
+let is_test_mode = ref false
+let test_output = Buffer.create 4096
 
 let has_decimal_part x =
   x <> floor x  
+
+(* This function is used to check if a number has a decimal part. *)
+(* It is used to format the output of numbers correctly. *)
 
 let is_false v = 
   if v = Vnone then true 
@@ -85,8 +88,13 @@ let rec to_string e =
 let rec print_value e = 
   let v1 = to_string e in
   match v1 with
-  | Vstring n -> Printf.printf "%s" n
+  | Vstring n -> 
+      if !is_test_mode then
+        Buffer.add_string test_output n
+      else
+        Printf.printf "%s" n
   | _ -> failwith "Unsupported print"
+      
 
 let get_datatype v = 
   begin match v with 
