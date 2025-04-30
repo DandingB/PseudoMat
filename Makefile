@@ -2,10 +2,10 @@ default:
 	dune build
 	dune exec ./Main.exe test.psu
 
-testall:
+tests:
 	dune test
 	
-tests:
+test-examples:
 ifeq ($(OS),Windows_NT)
 	@for %%f in (Test_Programs\*.psu) do ( \
 		set fname=%%~nxf & \
