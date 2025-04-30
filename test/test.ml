@@ -1,12 +1,5 @@
-(* Ignore specific warnings *)
-[@@@ocaml.warning "-33"]
-
 open Lib
-open Lexing
 open Parser
-open Lexer
-open Ast 
-open Interp
 
 let pp_token fmt p = 
   match p with
