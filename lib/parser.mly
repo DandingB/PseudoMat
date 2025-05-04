@@ -138,5 +138,5 @@ matrix_row:
 
 
 ident:
-  id = ID { { loc = ($startpos, $endpos); id } }
+  id = ID { { id } }
 ;
