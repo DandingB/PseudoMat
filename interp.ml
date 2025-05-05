@@ -268,7 +268,7 @@ let rec expr ctx = function
         | Bpow, Vnum n1, Vnum n2 -> Vnum (n1 ** n2)
         | Blt, Vnum n1, Vnum n2 -> Vbool (n1 < n2)
         | Blt, Vstring s1, Vstring s2 -> Vbool (s1 < s2)
-        | Beq, Vnum n1, Vnum n2 -> Vbool (n1 == n2)
+        | Beq, Vnum n1, Vnum n2 -> Vbool (n1 = n2)
         | Beq, Vstring s1, Vstring s2 -> Vbool (s1 = s2)
         | Bgt, Vnum n1, Vnum n2 -> Vbool (n1 > n2)
         | Bgt, Vstring s1, Vstring s2 -> Vbool (s1 > s2)
