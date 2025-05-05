@@ -20,7 +20,7 @@ let () =
 
     (* End timer and calculate  *)
     let end_time = Unix.gettimeofday () in
-    Printf.printf "\n\nPseudoMat execution time: %.5f seconds\n" (end_time -. start_time)
+    Printf.printf "\n\nPseudoMat execution time: %f seconds\n" (end_time -. start_time)
   with
   (* If lexer throws error, then display line and column and character *)
   | Lexer.Lexing_error msg ->
