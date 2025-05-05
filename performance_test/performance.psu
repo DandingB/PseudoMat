@@ -1,0 +1,15 @@
+Let c as 2x2 matrix
+c = [ 
+    1, 2;
+    1, 2
+    ]
+
+Let b be [ 
+    1, 2;
+    1, 2
+    ] as matrix
+
+
+For (1 to 100) {
+   (b + c)
+}

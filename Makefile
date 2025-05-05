@@ -20,3 +20,7 @@ else
 		dune exec ./Main.exe -- "$$file"; \
 	done
 endif
+
+performance-test:
+	python3 performance_test/performancePython.py
+	dune exec ./Main.exe performance_test/performance.psu
