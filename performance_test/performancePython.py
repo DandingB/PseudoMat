@@ -1,10 +1,10 @@
 import numpy as np
 import time
 
+start_time = time.time()
+
 A = np.array([[1, 2], [3, 4]])
 B = np.array([[5, 6], [7, 8]])
-
-start_time = time.time()
 
 for _ in range(100):
     C = A + B
