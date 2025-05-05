@@ -1,8 +1,11 @@
 default:
 	dune build
 	dune exec ./Main.exe test.psu
+
+unit-test:
+	dune test
 	
-tests:
+integration-test:
 ifeq ($(OS),Windows_NT)
 	@for %%f in (Test_Programs\*.psu) do ( \
 		set fname=%%~nxf & \
