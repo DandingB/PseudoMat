@@ -7,14 +7,14 @@ open Interp
 open Unix
 
 let () =
-  (* Start timer *)
-  let start_time = Unix.gettimeofday () in
 
   (* Read characters from file *)
   let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
   try
     (* Run all the different tokens through the parser *)
     let ast = Parser.main Lexer.next_token lexbuf in
+      (* Start timer *)
+    let start_time = Unix.gettimeofday () in
     (* Run the file function from the interp.ml file on the parsed output. *)
     Interp.file ast;
 
