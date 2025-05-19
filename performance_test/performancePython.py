@@ -7,7 +7,7 @@ A = np.array([[1, 2], [3, 4]])
 B = np.array([[5, 6], [7, 8]])
 
 for _ in range(1000000):
-    C = A + B
+    C = A * B
 
 end_time = time.time()
 
