@@ -3,7 +3,7 @@ default:
 	dune exec ./Main.exe test.psu
 
 unit-test:
-	dune test
+	dune test --force
 	
 integration-test:
 ifeq ($(OS),Windows_NT)
